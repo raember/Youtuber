@@ -53,14 +53,14 @@ namespace youtuber.net
             return site;
         }
 
-        protected static async Task<T> Load<T>(string url, string method = Http.Get) where T : InternetSite{
+        protected static async Task<InternetSite> Load(string url, string method = Http.Get){
             var req = WebRequest.CreateHttp(url);
             req.Method = method;
             req.KeepAlive = true;
-            return await Load<T>(req);
+            return await Load(req);
         }
 
-        protected static async Task<T> Load<T>(HttpWebRequest request) where T : InternetSite{
+        protected static async Task<InternetSite> Load(HttpWebRequest request){
             var resp = await request.GetResponseAsync();
             var respStream = resp.GetResponseStream();
             if (respStream == null) {
