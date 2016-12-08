@@ -71,7 +71,7 @@ namespace youtuber.net
                 content = await strmReader.ReadToEndAsync();
                 strmReader.DiscardBufferedData();
             }
-            return (T) FromContent(content);
+            return (InternetSite) FromContent(content);
         }
     }
 }
