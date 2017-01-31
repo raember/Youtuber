@@ -53,7 +53,7 @@ namespace youtuber.net
             return site;
         }
 
-        protected static async Task<InternetSite> Load(string url, string method = Http.Get){
+        protected static async Task<InternetSite> Load(string url, string method = "Http.Get"){
             var req = WebRequest.CreateHttp(url);
             req.Method = method;
             req.KeepAlive = true;
