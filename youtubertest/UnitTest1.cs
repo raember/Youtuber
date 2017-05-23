@@ -73,10 +73,10 @@ namespace youtubertest
             URLResult validVideo = URLResult.isValid | URLResult.hasVideoID | URLResult.isVideo;
             URLResult validImage = URLResult.isValid | URLResult.hasVideoID | URLResult.isImage;
             foreach (Uri validVideoUri in validVideoUris) {
-                Assert.AreEqual(validVideo, YoutubeUtility.analyseURL(validVideoUri));
+                Assert.AreEqual(validVideo, YoutubeUtility.analyzeURL(validVideoUri));
             }
             foreach (Uri validImageUri in validImageUris) {
-                Assert.AreEqual(validImage, YoutubeUtility.analyseURL(validImageUri));
+                Assert.AreEqual(validImage, YoutubeUtility.analyzeURL(validImageUri));
             }
         }
     }

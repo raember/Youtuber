@@ -9,7 +9,7 @@ namespace youtuber.net
 {
     public static class YoutubeUtility
     {
-        public static URLResult analyseURL(Uri uri){
+        public static URLResult analyzeURL(Uri uri){
             URLResult result = 0;
             if (string.IsNullOrEmpty(uri.Scheme) ||
                 "https".Equals(uri.Scheme) &&
