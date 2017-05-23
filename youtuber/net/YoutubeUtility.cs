@@ -9,25 +9,57 @@ namespace youtuber.net
 {
     public static class YoutubeUtility
     {
+        private const String VIDEOIDPATTERN = @"(?<id>[a-zA-Z0-9_-]{11})";
+        private const String PLAYLISTPATTERN = @"&list\=(?<pl>[a-zA-Z0-9_-]{13})";
+
+        private const String VIDEO1PATHQUERYVALIDATIONPATTERN =
+            @"^/watch\?v\=" + VIDEOIDPATTERN + "(" + PLAYLISTPATTERN + "|)";
+
+        private const String VIDEO2PATHQUERYVALIDATIONPATTERN = @"^/" + VIDEOIDPATTERN + "(" + PLAYLISTPATTERN + "|)";
+
+        private const String VIDEO3PATHQUERYVALIDATIONPATTERN =
+            @"^/embed/" + VIDEOIDPATTERN + "(" + PLAYLISTPATTERN + "|)";
+
+        private const String IMAGEPATHQUERYVALIDATIONPATTERN = @"^/vi/" + VIDEOIDPATTERN +
+                                                               @"/(0|1|2|3|default|hqdefault|mqdefault|sddefault|maxresdefault).jpg$"
+            ;
+
         public static URLResult analyzeURL(Uri uri){
             URLResult result = 0;
-            if (string.IsNullOrEmpty(uri.Scheme) ||
-                "https".Equals(uri.Scheme) &&
-                string.IsNullOrWhiteSpace(uri.UserInfo) &&
-                uri.Port == 0 ||
-                uri.Port == 443) { result |= URLResult.isValid; }
+            bool isValid = false;
+            Match match;
             switch (uri.Host) {
                 case "www.youtube.com":
                 case "youtube.com":
                 case "www.m.youtube.com":
                 case "m.youtube.com":
                     result |= URLResult.isVideo;
+                    match = Regex.Match(uri.PathAndQuery, VIDEO1PATHQUERYVALIDATIONPATTERN);
+                    if (match.Success) {
+                        result |= URLResult.hasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        isValid = true;
+                    }
                     break;
                 case "www.youtu.be":
                 case "youtu.be":
+                    result |= URLResult.isVideo;
+                    match = Regex.Match(uri.PathAndQuery, VIDEO2PATHQUERYVALIDATIONPATTERN);
+                    if (match.Success) {
+                        result |= URLResult.hasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        isValid = true;
+                    }
+                    break;
                 case "www.youtube-nocookie.com":
                 case "youtube-nocookie.com":
                     result |= URLResult.isVideo;
+                    match = Regex.Match(uri.PathAndQuery, VIDEO3PATHQUERYVALIDATIONPATTERN);
+                    if (match.Success) {
+                        result |= URLResult.hasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        isValid = true;
+                    }
                     break;
                 case "img.youtube.com":
                 case "i.ytimg.com":
@@ -36,15 +68,19 @@ namespace youtuber.net
                 case "i3.ytimg.com":
                 case "i4.ytimg.com":
                     result |= URLResult.isImage;
-                    if (!uri.PathAndQuery.StartsWith("/vi/")) {
-                        if (result.HasFlag(URLResult.isValid)) result -= URLResult.isValid;
+                    match = Regex.Match(uri.PathAndQuery, IMAGEPATHQUERYVALIDATIONPATTERN);
+                    if (match.Success) {
+                        result |= URLResult.hasVideoID;
+                        isValid = true;
                     }
                     break;
             }
-            if (Regex.IsMatch(uri.PathAndQuery, @"^/(watch\?v\=|embed/|vi/|)[a-zA-Z0-9_-]{11}")) {
-                result |= URLResult.hasVideoID;
-            }
-            if (Regex.IsMatch(uri.PathAndQuery, @"&list=[a-zA-Z0-9_-]{13}")) { result |= URLResult.isPlaylist; }
+            isValid &= ("file".Equals(uri.Scheme) ||
+                        "https".Equals(uri.Scheme)) &&
+                       string.IsNullOrWhiteSpace(uri.UserInfo) &&
+                       (uri.Port == -1 ||
+                        uri.Port == 443);
+            if (isValid) result |= URLResult.isValid;
             return result;
         }
     }

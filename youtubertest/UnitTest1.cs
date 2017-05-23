@@ -8,75 +8,87 @@ namespace youtubertest
     [TestClass]
     public class URLTest
     {
-        const string VIDEOID = "RCQV7FYlwlE";
-        const string HOST01 = "www.youtube.com";
-        const string HOST02 = "youtube.com";
-        const string HOST03 = "www.m.youtube.com";
-        const string HOST04 = "m.youtube.com";
-        const string HOST05 = "www.youtu.be";
-        const string HOST06 = "youtu.be";
-        const string HOST09 = "www.youtube-nocookie.com";
-        const string HOST10 = "youtube-nocookie.com";
-
-        const string HOST20 = "img.youtube.com";
-        const string HOST21 = "i.ytimg.com";
-        const string HOST22 = "i1.ytimg.com";
-        const string HOST23 = "i2.ytimg.com";
-        const string HOST24 = "i3.ytimg.com";
-        const string HOST25 = "i4.ytimg.com";
-
-        static Uri normalUrl1 = new Uri("https://" + HOST01 + "/watch?v=" + VIDEOID);
-        static Uri normalUrl2 = new Uri("https://" + HOST02 + "/watch?v=" + VIDEOID);
-        static Uri mobileUrl1 = new Uri("https://" + HOST03 + "/watch?v=" + VIDEOID);
-        static Uri mobileUrl2 = new Uri("https://" + HOST04 + "/watch?v=" + VIDEOID);
-        static Uri shortUrl1 = new Uri("https://" + HOST05 + "/" + VIDEOID);
-        static Uri shortUrl2 = new Uri("https://" + HOST06 + "/" + VIDEOID);
-        static Uri nocookieUrl1 = new Uri("https://" + HOST09 + "/embed/" + VIDEOID);
-        static Uri nocookieUrl2 = new Uri("https://" + HOST10 + "/embed/" + VIDEOID);
-
-        static Uri imageUrl0 = new Uri("https://" + HOST20 + "/vi/" + VIDEOID + "/0.jpg");
-        static Uri imageUrl1 = new Uri("https://" + HOST21 + "/vi/" + VIDEOID + "/1.jpg");
-        static Uri imageUrl2 = new Uri("https://" + HOST22 + "/vi/" + VIDEOID + "/2.jpg");
-        static Uri imageUrl3 = new Uri("https://" + HOST23 + "/vi/" + VIDEOID + "/3.jpg");
-        static Uri imageUrldef = new Uri("https://" + HOST24 + "/vi/" + VIDEOID + "/atic default.jpg");
-        static Uri imageUrlhq = new Uri("https://" + HOST25 + "/vi/" + VIDEOID + "/atic thqdefault.jpg");
-        static Uri imageUrlmq = new Uri("https://" + HOST20 + "/vi/" + VIDEOID + "/atic tmqdefault.jpg");
-        static Uri imageUrlsd = new Uri("https://" + HOST21 + "/vi/" + VIDEOID + "/atic tsddefault.jpg");
-        static Uri imageUrlmaxres = new Uri("https://" + HOST22 + "/vi/" + VIDEOID + "/maxresdefault.jpg");
-
-        List<Uri> validVideoUris = new List<Uri>(){
-            normalUrl1,
-            normalUrl2,
-            mobileUrl1,
-            mobileUrl2,
-            mobileUrl2,
-            shortUrl1,
-            shortUrl2,
-            nocookieUrl1,
-            nocookieUrl2
-        };
-
-        List<Uri> validImageUris = new List<Uri>(){
-            imageUrl0,
-            imageUrl1,
-            imageUrl2,
-            imageUrl3,
-            imageUrldef,
-            imageUrlhq,
-            imageUrlmq,
-            imageUrlsd,
-            imageUrlmaxres
-        };
+        private const string VIDEOID = "TWcyIpul8OE";
+        private const string PLAYLISTID = "RDd2Y4dFVgS8g";
 
         [TestMethod]
-        public void AcceptValidURLs(){
-            URLResult validVideo = URLResult.isValid | URLResult.hasVideoID | URLResult.isVideo;
-            URLResult validImage = URLResult.isValid | URLResult.hasVideoID | URLResult.isImage;
-            foreach (Uri validVideoUri in validVideoUris) {
-                Assert.AreEqual(validVideo, YoutubeUtility.analyzeURL(validVideoUri));
+        public void ValidateVideoURLs(){
+            URLResult validVideo = URLResult.isValid |
+                                   URLResult.hasVideoID |
+                                   URLResult.isVideo;
+
+            foreach (string url in new[]{
+                "https://www.youtube.com/watch?v=" + VIDEOID,
+                "https://youtube.com/watch?v=" + VIDEOID,
+                "https://www.m.youtube.com/watch?v=" + VIDEOID,
+                "https://m.youtube.com/watch?v=" + VIDEOID,
+                "https://www.youtu.be/" + VIDEOID,
+                "https://youtu.be/" + VIDEOID,
+                "https://www.youtube-nocookie.com/embed/" + VIDEOID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID,
+            }) {
+                Uri uri = new Uri(url);
+                Assert.AreEqual(validVideo, YoutubeUtility.analyzeURL(uri));
             }
-            foreach (Uri validImageUri in validImageUris) {
-                Assert.AreEqual(validImage, YoutubeUtility.analyzeURL(validImageUri));
+        }
+
+        [TestMethod]
+        public void ValidatePlaylistUrls(){
+            URLResult validVideoOfPlaylist = URLResult.isValid |
+                                             URLResult.hasVideoID |
+                                             URLResult.isVideo |
+                                             URLResult.isPlaylist;
+
+            foreach (string url in new[]{
+                "https://www.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube.com:443/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+            }) {
+                Uri uri = new Uri(url);
+                Assert.AreEqual(validVideoOfPlaylist, YoutubeUtility.analyzeURL(uri));
+            }
+        }
+
+        [TestMethod]
+        public void ValidateImageUrls(){
+            URLResult validImage = URLResult.isValid |
+                                   URLResult.hasVideoID |
+                                   URLResult.isImage;
+
+            foreach (string url in new[]{
+                "https://img.youtube.com/vi/" + VIDEOID + "/0.jpg",
+                "https://i.ytimg.com/vi/" + VIDEOID + "/1.jpg",
+                "https://i1.ytimg.com/vi/" + VIDEOID + "/2.jpg",
+                "https://i2.ytimg.com/vi/" + VIDEOID + "/3.jpg",
+                "https://i3.ytimg.com/vi/" + VIDEOID + "/default.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/hqdefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/mqdefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/sddefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/maxresdefault.jpg"
+            }) {
+                Uri uri = new Uri(url);
+                Assert.AreEqual(validImage, YoutubeUtility.analyzeURL(uri));
+            }
+        }
+
+        [TestMethod]
+        public void InvalidateUrls(){
+            foreach (string url in new[]{
+                "//google.com/",
+                "//youtube.com/",
+                "//youtube.com/watch?v=abc",
+                "//youtube.com/watch?v==0123456789",
+                "http://youtube.com/watch?v=0123456789_",
+                "//img.youtube.com/0123456789_/"
+            }) {
+                Uri uri = new Uri(url);
+                Assert.IsFalse(YoutubeUtility.analyzeURL(uri).HasFlag(URLResult.isValid));
             }
         }
     }
