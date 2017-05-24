@@ -28,7 +28,7 @@ namespace youtubertest
                 "https://youtube-nocookie.com/embed/" + VIDEOID,
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validVideo, YoutubeUtility.analyzeURL(uri));
+                Assert.AreEqual(validVideo, YoutubeUtility.AnalyzeURI(uri));
             }
         }
 
@@ -44,14 +44,10 @@ namespace youtubertest
                 "https://www.youtube.com:443/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
                 "https://youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
                 "https://www.m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://www.youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://www.youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validVideoOfPlaylist, YoutubeUtility.analyzeURL(uri));
+                Assert.AreEqual(validVideoOfPlaylist, YoutubeUtility.AnalyzeURI(uri));
             }
         }
 
@@ -73,7 +69,7 @@ namespace youtubertest
                 "https://i4.ytimg.com/vi/" + VIDEOID + "/maxresdefault.jpg"
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validImage, YoutubeUtility.analyzeURL(uri));
+                Assert.AreEqual(validImage, YoutubeUtility.AnalyzeURI(uri));
             }
         }
 
@@ -85,10 +81,63 @@ namespace youtubertest
                 "//youtube.com/watch?v=abc",
                 "//youtube.com/watch?v==0123456789",
                 "http://youtube.com/watch?v=0123456789_",
-                "//img.youtube.com/0123456789_/"
+                "//img.youtube.com/0123456789_/",
+                "https://www.youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
             }) {
                 Uri uri = new Uri(url);
-                Assert.IsFalse(YoutubeUtility.analyzeURL(uri).HasFlag(URLResult.isValid));
+                Assert.IsFalse(YoutubeUtility.AnalyzeURI(uri).HasFlag(URLResult.isValid));
+            }
+        }
+
+        [TestMethod]
+        public void ExtractVideoID(){
+            foreach (string url in new[]{
+                "https://www.youtube.com/watch?v=" + VIDEOID,
+                "https://youtube.com/watch?v=" + VIDEOID,
+                "https://www.m.youtube.com/watch?v=" + VIDEOID,
+                "https://m.youtube.com/watch?v=" + VIDEOID,
+                "https://www.youtu.be/" + VIDEOID,
+                "https://youtu.be/" + VIDEOID,
+                "https://www.youtube-nocookie.com/embed/" + VIDEOID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID,
+                "https://www.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube.com:443/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://img.youtube.com/vi/" + VIDEOID + "/0.jpg",
+                "https://i.ytimg.com/vi/" + VIDEOID + "/1.jpg",
+                "https://i1.ytimg.com/vi/" + VIDEOID + "/2.jpg",
+                "https://i2.ytimg.com/vi/" + VIDEOID + "/3.jpg",
+                "https://i3.ytimg.com/vi/" + VIDEOID + "/default.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/hqdefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/mqdefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/sddefault.jpg",
+                "https://i4.ytimg.com/vi/" + VIDEOID + "/maxresdefault.jpg"
+            }) {
+                Uri uri = new Uri(url);
+                Assert.AreEqual(VIDEOID, YoutubeUtility.ExtractVideoID(uri));
+            }
+        }
+
+        [TestMethod]
+        public void ExtractPlaylistID(){
+            foreach (string url in new[]{
+                "https://www.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.youtube.com:443/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://www.m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID
+            }) {
+                Uri uri = new Uri(url);
+                Assert.AreEqual(PLAYLISTID, YoutubeUtility.ExtractPlaylistID(uri));
             }
         }
     }
