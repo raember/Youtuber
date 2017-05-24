@@ -28,7 +28,7 @@ namespace youtubertest
                 "https://youtube-nocookie.com/embed/" + VIDEOID,
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validVideo, YoutubeUtility.AnalyzeURI(uri));
+                Assert.AreEqual(validVideo, URLUtility.AnalyzeURI(uri));
             }
         }
 
@@ -47,7 +47,7 @@ namespace youtubertest
                 "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validVideoOfPlaylist, YoutubeUtility.AnalyzeURI(uri));
+                Assert.AreEqual(validVideoOfPlaylist, URLUtility.AnalyzeURI(uri));
             }
         }
 
@@ -69,7 +69,7 @@ namespace youtubertest
                 "https://i4.ytimg.com/vi/" + VIDEOID + "/maxresdefault.jpg"
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(validImage, YoutubeUtility.AnalyzeURI(uri));
+                Assert.AreEqual(validImage, URLUtility.AnalyzeURI(uri));
             }
         }
 
@@ -88,7 +88,7 @@ namespace youtubertest
                 "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
             }) {
                 Uri uri = new Uri(url);
-                Assert.IsFalse(YoutubeUtility.AnalyzeURI(uri).HasFlag(URLResult.isValid));
+                Assert.IsFalse(URLUtility.AnalyzeURI(uri).HasFlag(URLResult.isValid));
             }
         }
 
@@ -123,7 +123,7 @@ namespace youtubertest
                 "https://i4.ytimg.com/vi/" + VIDEOID + "/maxresdefault.jpg"
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(VIDEOID, YoutubeUtility.ExtractVideoID(uri));
+                Assert.AreEqual(VIDEOID, URLUtility.ExtractVideoID(uri));
             }
         }
 
@@ -137,7 +137,7 @@ namespace youtubertest
                 "https://m.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID
             }) {
                 Uri uri = new Uri(url);
-                Assert.AreEqual(PLAYLISTID, YoutubeUtility.ExtractPlaylistID(uri));
+                Assert.AreEqual(PLAYLISTID, URLUtility.ExtractPlaylistID(uri));
             }
         }
     }
