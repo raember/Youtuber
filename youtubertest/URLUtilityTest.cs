@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using youtuber.net;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class URLTest
+    public class URLUtilityTest
     {
         private const string VIDEOID = "TWcyIpul8OE";
         private const string PLAYLISTID = "RDd2Y4dFVgS8g";

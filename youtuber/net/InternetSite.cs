@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace youtuber.net
@@ -26,52 +28,33 @@ namespace youtuber.net
     /// </summary>
     public class InternetSite
     {
+        public static HttpWebRequest DefaultHttpWebRequest = null;
+
+        public static string UserAgent =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0";
+
+        protected string content = string.Empty;
+
+        protected HttpWebRequest request;
         protected HttpWebResponse response;
 
-        public InternetSite(string content){
-            Content = content;
+        protected InternetSite(Uri uri){
+            request = DefaultHttpWebRequest == null ? WebRequest.CreateHttp(uri) : DefaultHttpWebRequest;
         }
 
-        public string Content {get; private set;}
+        public bool Success {get; private set;}
 
-        public static InternetSite FromContent(string content){
-            return new InternetSite(content);
-        }
+        public Uri Uri => request.RequestUri;
 
-        public static async Task<InternetSite> FromResponse(HttpWebResponse response){
-            var respStream = response.GetResponseStream();
-            if (respStream == null) {
-                throw new WebException("No response stream recieved.");
-            }
-            var content = string.Empty;
-            using (var strmReader = new StreamReader(respStream)) {
+        protected async Task Load(){
+            response = (HttpWebResponse) await request.GetResponseAsync();
+            var responseStream = response.GetResponseStream();
+            if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
+            using (var strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
                 content = await strmReader.ReadToEndAsync();
                 strmReader.DiscardBufferedData();
             }
-            var site = FromContent(content);
-            site.response = response;
-            return site;
-        }
-
-        protected static async Task<InternetSite> Load(string url, string method = "Http.Get"){
-            var req = WebRequest.CreateHttp(url);
-            req.Method = method;
-            req.KeepAlive = true;
-            return await Load(req);
-        }
-
-        protected static async Task<InternetSite> Load(HttpWebRequest request){
-            var resp = await request.GetResponseAsync();
-            var respStream = resp.GetResponseStream();
-            if (respStream == null) {
-                throw new WebException("No response stream recieved.");
-            }
-            var content = string.Empty;
-            using (var strmReader = new StreamReader(respStream)) {
-                content = await strmReader.ReadToEndAsync();
-                strmReader.DiscardBufferedData();
-            }
-            return (InternetSite) FromContent(content);
+            Success = true;
         }
     }
 }

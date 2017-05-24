@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace youtuber.net
 {
     /// <summary>
-    /// Utility class revolving Youtube uris.
+    ///     Utility class revolving Youtube uris.
     /// </summary>
     public static class URLUtility
     {
@@ -26,13 +22,14 @@ namespace youtuber.net
             @"^/vi/" + VIDEOIDPATTERN + @"/(0|1|2|3|default|hqdefault|mqdefault|sddefault|maxresdefault).jpg$";
 
         /// <summary>
-        /// Analyzes a given uri. Succeeds only if the uri is a valid youtube link to either a video(can be in a playlist) or an image of a video.
+        ///     Analyzes a given uri. Succeeds only if the uri is a valid youtube link to either a video(can be in a playlist) or
+        ///     an image of a video.
         /// </summary>
         /// <param name="uri">the uri in question</param>
         /// <returns>an Enum representing the essential properties of the uri</returns>
         public static URLResult AnalyzeURI(Uri uri){
             URLResult result = 0;
-            bool isValid = false;
+            var isValid = false;
             Match match;
             switch (uri.Host) {
                 case "www.youtube.com":
@@ -91,22 +88,22 @@ namespace youtuber.net
         }
 
         /// <summary>
-        /// Extracts a video ID of a given uri.
+        ///     Extracts a video ID of a given uri.
         /// </summary>
         /// <param name="uri">the uri to be parsed</param>
         /// <returns>the video ID within the uri</returns>
-        public static String ExtractVideoID(Uri uri){
-            Match match = Regex.Match(uri.PathAndQuery, @"(?<=/watch\?v\=|/embed/|/vi/|/)" + VIDEOIDPATTERN);
+        public static string ExtractVideoID(Uri uri){
+            var match = Regex.Match(uri.PathAndQuery, @"(?<=/watch\?v\=|/embed/|/vi/|/)" + VIDEOIDPATTERN);
             return match.Groups["id"].Value;
         }
 
         /// <summary>
-        /// Extracts a playlist ID of a given uri.
+        ///     Extracts a playlist ID of a given uri.
         /// </summary>
         /// <param name="uri">the uri to be parsed</param>
         /// <returns>the playlist ID within the uri</returns>
-        public static String ExtractPlaylistID(Uri uri){
-            Match match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERN);
+        public static string ExtractPlaylistID(Uri uri){
+            var match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERN);
             return match.Groups["pl"].Value;
         }
     }
