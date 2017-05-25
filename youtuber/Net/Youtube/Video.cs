@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -27,8 +28,9 @@ namespace youtuber.net
             get
             {
                 var match = Regex.Match(content,
-                    @"\<strong class\=""watch-time-text""\>(\w|\s)+?(?<date>\d+?\.\d+?.\d{4})\</strong\>");
-                return DateTime.Parse(match.Groups["date"].Value);
+                    @"(?<=\<strong class\=""watch-time-text""\>Uploaded on ).+?(?=\</strong\>)",
+                    RegexOptions.Singleline);
+                return DateTime.ParseExact(match.Value, "MMM dd, yyyy", new CultureInfo("en-US"));
             }
         }
 
@@ -57,8 +59,8 @@ namespace youtuber.net
         {
             get
             {
-                var match = Regex.Match(content, @"\<div class\=""watch-view-count""\>(?<views>[\d\.]+?)\s.+?\</div\>");
-                var str = match.Groups["views"].Value.Replace(".", "");
+                var match = Regex.Match(content, @"(?<=\<div class\=""watch-view-count""\>).+?(?=\sviews\</div\>)");
+                var str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
         }
@@ -68,8 +70,8 @@ namespace youtuber.net
             get
             {
                 var match = Regex.Match(content,
-                    @"\<button class="".+?-like-button.+?\<span class=""yt-uix-button-content""\>(?<likes>[\d\.]+?)\</span\>");
-                var str = match.Groups["likes"].Value.Replace(".", "");
+                    @"(?<=like-button-renderer-like-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
+                var str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
         }
@@ -79,8 +81,8 @@ namespace youtuber.net
             get
             {
                 var match = Regex.Match(content,
-                    @"\<button class="".+?-dislike-button.+?\<span class=""yt-uix-button-content""\>(?<dislikes>[\d\.]+?)\</span\>");
-                var str = match.Groups["dislikes"].Value.Replace(".", "");
+                    @"(?<=like-button-renderer-dislike-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
+                var str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
         }
@@ -90,8 +92,8 @@ namespace youtuber.net
             get
             {
                 var match = Regex.Match(content,
-                    @"\<span class=""yt-subscription-button-subscriber-count-branded-horizontal yt-subscriber-count"" title="".+?"" aria-label="".+?"" tabindex=""0""\>(?<subs>[\d\.]+?)\</span\>");
-                var str = match.Groups["subs"].Value.Replace(".", "");
+                    @"(?<=class\=""[^<>]*?yt-subscriber-count[^<>]*?title\="")[^""]*?(?="")");
+                var str = match.Value.Replace("K", "000").Replace("M", "000000");
                 return long.Parse(str);
             }
         }
@@ -116,17 +118,23 @@ namespace youtuber.net
         }
 
         private async Task<Video> LoadSite(){
+            if (DefaultHttpWebRequest != null) {
+                await Load();
+                return this;
+            }
             var headers = request.Headers;
-            headers.Add("Host", "www.youtube.com");
-            headers.Add("User-Agent", UserAgent);
-            headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            headers.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.5");
-            headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
-            headers.Add("DNT", "1");
-            headers.Add("Upgrade-Insecure-Requests", "1");
-            headers.Add("Connection", "keep-alive");
-            headers.Add("Pragma", "no-cache");
-            headers.Add("Cache-Control", "no-cache");
+            //headers.Add("User-Agent", UserAgent);
+            request.UserAgent = UserAgent;
+            //headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            request.Accept = "text/html";
+            //headers.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.5");
+            //headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+            //headers.Add("DNT", "1");
+            //headers.Add("Upgrade-Insecure-Requests", "1");
+            //headers.Add("Connection", "keep-alive");
+            request.KeepAlive = true;
+            //headers.Add("Pragma", "no-cache");
+            //headers.Add("Cache-Control", "no-cache");
             await Load();
             return this;
         }

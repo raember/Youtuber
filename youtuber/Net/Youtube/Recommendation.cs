@@ -30,7 +30,7 @@ namespace youtuber.net
                 string username = WebUtility.HtmlDecode(Regex
                     .Match(content, @"(?<=\<span class\=""g-hovercard""[^<>]*?\>)[^<>]*?(?=\</span\>)").Value);
                 string durationStr = Regex.Match(content,
-                                              @"(?<=\<span class\=""accessible-description""[^<>]*?\>.*?:\s)[\d:]+?(?=\s*?\</span\>)",
+                                              @"(?<=\<span class\=""accessible-description""[^<>]*?\>.*?:\s)[\d:]+?(?=\.\s*?\</span\>)",
                                               RegexOptions.Singleline)
                                           .Value;
                 TimeSpan duration = TimeSpan.Zero;
@@ -45,7 +45,9 @@ namespace youtuber.net
                     }
                     duration = TimeSpan.Parse(durationStr);
                 }
-                return new Video(title, videoID, username, duration);
+                string viewsStr = Regex.Match(content, @"(?<=\<span class\=""stat view-count""\>)[^<>]*?(?=\sviews\</span\>)").Value;
+                long views = string.IsNullOrEmpty(viewsStr) ? -1 : long.Parse(viewsStr.Replace(",", ""));
+                return new Video(title, videoID, username, duration, views);
             }
             title = WebUtility.HtmlDecode(Regex.Match(liElement,
                                                    @"(?<=\<span[^<>]+?class\=""title""[^<>]*?\>)[^<>]+?(?=\</span\>)")
@@ -67,10 +69,11 @@ namespace youtuber.net
 
         public class Video : Recommendation
         {
-            internal Video(string title, string videoId, string username, TimeSpan duration) : base(title,
+            internal Video(string title, string videoId, string username, TimeSpan duration, long views) : base(title,
                 videoId){
                 Username = username;
                 Duration = duration;
+                Views = views;
             }
 
             public string Username {get;}
