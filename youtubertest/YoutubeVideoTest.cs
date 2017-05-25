@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using youtuber.net;
+using youtuber.Net.Youtube;
 
 namespace youtubertest
 {
@@ -81,6 +82,18 @@ namespace youtubertest
             Assert.IsTrue(playlistRecomm.Title.EndsWith("Bon Iver - Holocene (Official Music Video)"));
             Assert.AreEqual("TWcyIpul8OE", playlistRecomm.VideoID);
             Assert.AreEqual("RDTWcyIpul8OE", playlistRecomm.PlaylistID);
+        }
+
+        [TestMethod]
+        public void GetDownloadData() {
+            SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
+
+            Task<Video> task = Video.fromID(VIDEOID);
+            Video video = task.Result;
+            Assert.IsTrue(video.Success);
+            List<VideoFile> videoFiles = video.ExtractFiles();
+            Assert.IsNotNull(videoFiles);
+            //TODO: Finish test...
         }
     }
 }

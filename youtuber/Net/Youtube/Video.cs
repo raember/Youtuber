@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using youtuber.Net.Youtube;
 
 namespace youtuber.net
 {
@@ -137,6 +140,18 @@ namespace youtuber.net
             //headers.Add("Cache-Control", "no-cache");
             await Load();
             return this;
+        }
+
+        public List<VideoFile> ExtractFiles() {
+            string jsonString = Regex.Match(content, @"(?<=ytplayer\.config\s\=\s){.*?}(?=;)").Value;
+            dynamic json = JsonConvert.DeserializeObject(jsonString);
+            string adaptiveFormatStr = json.args.adaptive_fmts;
+            adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
+            List<VideoFile> formats = new List<VideoFile>();
+            foreach (string formatStr in adaptiveFormatStr.Split(',')) {
+                formats.Add(new VideoFile(formatStr));
+            }
+            return formats;
         }
     }
 }
