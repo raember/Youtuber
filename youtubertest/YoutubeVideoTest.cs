@@ -42,12 +42,12 @@ namespace youtubertest
         public void GetVideoData(){
             SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
 
-            Task<YoutubeVideo> task = YoutubeVideo.fromID(VIDEOID);
-            YoutubeVideo youtubeVideo = task.Result;
-            Assert.IsTrue(youtubeVideo.Success);
-            Assert.AreEqual(VIDEOID, youtubeVideo.VideoID);
-            Assert.AreEqual("Bon Iver - Holocene (Official Music Video)", youtubeVideo.Title);
-            Assert.AreEqual(DateTime.Parse("17.08.2011"), youtubeVideo.UploadedDateTime);
+            Task<Video> task = Video.fromID(VIDEOID);
+            Video video = task.Result;
+            Assert.IsTrue(video.Success);
+            Assert.AreEqual(VIDEOID, video.VideoID);
+            Assert.AreEqual("Bon Iver - Holocene (Official Music Video)", video.Title);
+            Assert.AreEqual(DateTime.Parse("17.08.2011"), video.UploadedDateTime);
             Assert.AreEqual(
                 "Director: NABIL (NABIL.com)<br />" +
                 "Producer: Jill Hammer<br />" +
@@ -57,19 +57,20 @@ namespace youtubertest
                 "<br />" +
                 "boniver.org<br />" +
                 "jagjaguwar.com",
-                youtubeVideo.Description);
-            Assert.AreEqual("boniver", youtubeVideo.Username);
-            Assert.AreEqual(31278815, youtubeVideo.Views);
-            Assert.AreEqual(171340, youtubeVideo.Likes);
-            Assert.AreEqual(3198, youtubeVideo.Dislikes);
-            Assert.AreEqual(235000, youtubeVideo.Subscribers);
-            List<YoutubeRecommendation> relatedVideos = youtubeVideo.RelatedVideos;
+                video.Description);
+            Assert.AreEqual("boniver", video.Username);
+            Assert.AreEqual(31278815, video.Views);
+            Assert.AreEqual(171340, video.Likes);
+            Assert.AreEqual(3198, video.Dislikes);
+            Assert.AreEqual(235000, video.Subscribers);
+            List<Recommendation> relatedVideos = video.RelatedVideos;
             Assert.IsTrue(relatedVideos.Count == 20);
-            YoutubeRecommendation recomm = relatedVideos.First();
-            Assert.IsTrue(recomm.Title.EndsWith("Bon Iver - Holocene (Official Music Video)"));
-            Assert.IsTrue(recomm.IsPlaylist);
-            Assert.AreEqual("TWcyIpul8OE", recomm.VideoId);
-            Assert.AreEqual("RDTWcyIpul8OE", recomm.PlaylistId);
+            Recommendation recomm = relatedVideos.First();
+            Assert.IsTrue(recomm.GetType() == typeof(Recommendation.Playlist));
+            Recommendation.Playlist playlist = (Recommendation.Playlist)recomm;
+            Assert.IsTrue(playlist.Title.EndsWith("Bon Iver - Holocene (Official Music Video)"));
+            Assert.AreEqual("TWcyIpul8OE", playlist.VideoID);
+            Assert.AreEqual("RDTWcyIpul8OE", playlist.PlaylistID);
         }
     }
 }

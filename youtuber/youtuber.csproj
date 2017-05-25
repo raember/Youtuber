@@ -43,10 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="net\InternetSite.cs" />
-    <Compile Include="net\URLUtility.cs" />
-    <Compile Include="net\YoutubeRecommendation.cs" />
-    <Compile Include="net\YoutubeVideo.cs" />
+    <Compile Include="Net\InternetSite.cs" />
+    <Compile Include="Net\Youtube\URLUtility.cs" />
+    <Compile Include="Net\Youtube\Recommendation.cs" />
+    <Compile Include="Net\Youtube\Video.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

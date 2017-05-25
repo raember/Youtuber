@@ -19,7 +19,7 @@ namespace youtuber.net
         private const string VIDEO3PATHQUERYVALIDATIONPATTERN = @"^/embed/" + VIDEOIDPATTERN + "$";
 
         private const string IMAGEPATHQUERYVALIDATIONPATTERN =
-            @"^/vi/" + VIDEOIDPATTERN + @"/(0|1|2|3|default|hqdefault|mqdefault|sddefault|maxresdefault).jpg$";
+            @"^/vi/" + VIDEOIDPATTERN + @"/(0|1|2|3|default|hqdefault|mqdefault|sddefault|maxresdefault).jpg";
 
         /// <summary>
         ///     Analyzes a given uri. Succeeds only if the uri is a valid youtube link to either a video(can be in a playlist) or

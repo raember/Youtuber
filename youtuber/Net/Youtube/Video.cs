@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace youtuber.net
 {
-    public class YoutubeVideo : InternetSite
+    public class Video : InternetSite
     {
-        private YoutubeVideo(Uri uri) : base(uri){ }
+        private Video(Uri uri) : base(uri){ }
 
         public string Title
         {
@@ -96,26 +96,26 @@ namespace youtuber.net
             }
         }
 
-        public List<YoutubeRecommendation> RelatedVideos
+        public List<Recommendation> RelatedVideos
         {
             get
             {
-                var list = new List<YoutubeRecommendation>();
+                var list = new List<Recommendation>();
                 foreach (Match match in Regex.Matches(content,
                     @"\<li class\=""video-list-item related-list-item.+?(\</div\>|\</a\>)\s*?</li>",
-                    RegexOptions.Singleline)) list.Add(YoutubeRecommendation.FromLiElement(match.Value));
+                    RegexOptions.Singleline)) list.Add(Recommendation.FromLiElement(match.Value));
                 return list;
             }
         }
 
-        public static async Task<YoutubeVideo> fromID(string videoID){
+        public static async Task<Video> fromID(string videoID){
             var uri = new Uri("https://www.youtube.com/watch?v=" + videoID);
-            var youtubeVideo = await new YoutubeVideo(uri).LoadSite();
+            var youtubeVideo = await new Video(uri).LoadSite();
             youtubeVideo.VideoID = videoID;
             return youtubeVideo;
         }
 
-        private async Task<YoutubeVideo> LoadSite(){
+        private async Task<Video> LoadSite(){
             var headers = request.Headers;
             headers.Add("Host", "www.youtube.com");
             headers.Add("User-Agent", UserAgent);
@@ -125,6 +125,8 @@ namespace youtuber.net
             headers.Add("DNT", "1");
             headers.Add("Upgrade-Insecure-Requests", "1");
             headers.Add("Connection", "keep-alive");
+            headers.Add("Pragma", "no-cache");
+            headers.Add("Cache-Control", "no-cache");
             await Load();
             return this;
         }
