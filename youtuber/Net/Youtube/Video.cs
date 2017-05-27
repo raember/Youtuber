@@ -147,9 +147,14 @@ namespace youtuber.net
             dynamic json = JsonConvert.DeserializeObject(jsonString);
             string adaptiveFormatStr = json.args.adaptive_fmts;
             adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
+            string urlencstreammapStr = json.args.url_encoded_fmt_stream_map;
+            urlencstreammapStr = Regex.Unescape(urlencstreammapStr);
             List<VideoFile> formats = new List<VideoFile>();
             foreach (string formatStr in adaptiveFormatStr.Split(',')) {
-                formats.Add(new VideoFile(formatStr));
+                formats.Add(VideoFile.FromFormatString(formatStr));
+            }
+            foreach (string formatStr in urlencstreammapStr.Split(',')) {
+                formats.Add(VideoFile.FromFormatString(formatStr));
             }
             return formats;
         }
