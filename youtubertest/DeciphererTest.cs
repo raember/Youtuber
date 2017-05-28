@@ -29,10 +29,10 @@ namespace youtubertest
             Assert.AreEqual("EDCBA", Decipherer.Reverse.Invoke("ABCDE", 0));
             Assert.AreEqual("EDCBA", Decipherer.Reverse.Invoke("ABCDE", 3));
 
-            Assert.AreEqual("", Decipherer.Splice.Invoke("ABCDE", 0));
-            Assert.AreEqual("A", Decipherer.Splice.Invoke("ABCDE", 1));
-            Assert.AreEqual("ABCDE", Decipherer.Splice.Invoke("ABCDE", 5));
-            Assert.AreEqual("ABCDE", Decipherer.Splice.Invoke("ABCDE", 7));
+            Assert.AreEqual("ABCDE", Decipherer.Splice.Invoke("ABCDE", 0));
+            Assert.AreEqual("BCDE", Decipherer.Splice.Invoke("ABCDE", 1));
+            Assert.AreEqual("", Decipherer.Splice.Invoke("ABCDE", 5));
+            Assert.AreEqual("", Decipherer.Splice.Invoke("ABCDE", 7));
         }
 
         [TestMethod]
