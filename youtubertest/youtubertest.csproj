@@ -57,7 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DeciphererTest.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="IntegrationTests.cs" />
     <Compile Include="YoutubeVideoTest.cs" />
     <Compile Include="URLUtilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

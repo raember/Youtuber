@@ -11,7 +11,18 @@ namespace youtuber.net
 {
     public class Video : InternetSite
     {
-        private Video(Uri uri) : base(uri){ }
+        private Video(Uri uri) : base(uri){
+            Success &= !Regex.Match(content, @"id\=""unavailable-message""").Success;
+        }
+
+        public bool IsAvailable
+        {
+            get
+            {
+                Match match = Regex.Match(content, @"id\=""unavailable-message""");
+                return !match.Success;
+            }
+        }
 
         public string Title
         {

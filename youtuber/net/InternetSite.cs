@@ -42,7 +42,7 @@ namespace youtuber.net
             request = DefaultHttpWebRequest == null ? WebRequest.CreateHttp(uri) : DefaultHttpWebRequest;
         }
 
-        public bool Success {get; private set;}
+        public bool Success {get; protected set;}
 
         public Uri Uri => request.RequestUri;
 

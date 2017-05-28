@@ -14,16 +14,22 @@ namespace youtubertest
     public class IntegrationTests
     {
         [TestMethod]
-        public async Task IntegrationTest(){
-            Uri link = new Uri("https://www.youtube.com/watch?v=TWcyIpul8OE");
+        public async Task IntegrationTest() {
+            const string VIDEOID = "TWcyIpul8OE";
+            const string PLAYLISTID = "RDd2Y4dFVgS8g";
+            Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}");
+            //Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}&list={PLAYLISTID}");
+            //Uri link = new Uri($"https://img.youtube.com/vi/{VIDEOID}/0.jpg");
+            string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
 
             // Classify link
             URLResult result = URLUtility.AnalyzeURI(link);
 
-            if (!result.HasFlag(URLResult.isValid)) return;
-            if (result.HasFlag(URLResult.isVideo)) { // You're a video, Harry!
-                string VideoID = URLUtility.ExtractVideoID(link);
-                Video video = await Video.fromID(VideoID);
+            if (!result.HasFlag(URLResult.IsValid)) return;
+            if (result.HasFlag(URLResult.IsVideo)) { // You're a video, Harry!
+                string videoId = URLUtility.ExtractVideoID(link);
+                Video video = await Video.fromID(videoId);
+                if (!video.Success) return;
 
                 // Get video data
                 string title = video.Title;
@@ -54,15 +60,21 @@ namespace youtubertest
                 // Get your download link
                 Uri downloadUri = await bestAudio.GetDownloadUri();
                 string extension = bestAudio.Extension;
-                string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
 
                 // Download (Don't do it like this. Do it properly, please)
                 byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
                 File.WriteAllBytes(Path.Combine(basePath, $"{title}{extension}"), data);
-            } else if (result.HasFlag(URLResult.isPlaylist)) { // You're a playlist, Harry!
+            } else if (result.HasFlag(URLResult.IsPlaylist)) { // You're a playlist, Harry!
                 // Not yet implemented
-            } else if (result.HasFlag(URLResult.isImage)) { // You're an image, Harry!
-                // Not yet implemented
+            } else if (result.HasFlag(URLResult.IsImage)) { // You're an image, Harry!
+                string videoId = URLUtility.ExtractVideoID(link);
+
+                // Get your download link
+                Uri downloadUri = Image.FromID(videoId, ImageType.MaximumResolutionDefault);
+
+                // Download (Don't do it like this. Do it properly, please)
+                byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
+                File.WriteAllBytes(Path.Combine(basePath, "image.jpg"), data);
             }
         }
     }

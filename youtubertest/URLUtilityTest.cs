@@ -12,9 +12,9 @@ namespace youtubertest
 
         [TestMethod]
         public void ValidateVideoURLs(){
-            URLResult validVideo = URLResult.isValid |
-                                   URLResult.hasVideoID |
-                                   URLResult.isVideo;
+            URLResult validVideo = URLResult.IsValid |
+                                   URLResult.HasVideoID |
+                                   URLResult.IsVideo;
 
             foreach (string url in new[]{
                 "https://www.youtube.com/watch?v=" + VIDEOID,
@@ -33,10 +33,10 @@ namespace youtubertest
 
         [TestMethod]
         public void ValidatePlaylistUrls(){
-            URLResult validVideoOfPlaylist = URLResult.isValid |
-                                             URLResult.hasVideoID |
-                                             URLResult.isVideo |
-                                             URLResult.isPlaylist;
+            URLResult validVideoOfPlaylist = URLResult.IsValid |
+                                             URLResult.HasVideoID |
+                                             URLResult.IsVideo |
+                                             URLResult.IsPlaylist;
 
             foreach (string url in new[]{
                 "https://www.youtube.com/watch?v=" + VIDEOID + "&list=" + PLAYLISTID,
@@ -52,9 +52,9 @@ namespace youtubertest
 
         [TestMethod]
         public void ValidateImageUrls(){
-            URLResult validImage = URLResult.isValid |
-                                   URLResult.hasVideoID |
-                                   URLResult.isImage;
+            URLResult validImage = URLResult.IsValid |
+                                   URLResult.HasVideoID |
+                                   URLResult.IsImage;
 
             foreach (string url in new[]{
                 "https://img.youtube.com/vi/" + VIDEOID + "/0.jpg",
@@ -87,7 +87,7 @@ namespace youtubertest
                 "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID
             }) {
                 Uri uri = new Uri(url);
-                Assert.IsFalse(URLUtility.AnalyzeURI(uri).HasFlag(URLResult.isValid));
+                Assert.IsFalse(URLUtility.AnalyzeURI(uri).HasFlag(URLResult.IsValid));
             }
         }
 

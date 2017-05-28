@@ -38,11 +38,10 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public void GetVideoData(){
+        public async Task GetVideoData(){
             SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
-
-            Task<Video> task = Video.fromID(VIDEOID);
-            Video video = task.Result;
+            
+            Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);
             Assert.AreEqual(VIDEOID, video.VideoID);
             Assert.AreEqual("Bon Iver - Holocene (Official Music Video)", video.Title);
@@ -84,11 +83,18 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public void GetDownloadData(){
-            SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
+        public async Task DetectRemovedVideo(){
+            SetMock(Path.Combine(basePath, "removedVideo.html"));
 
-            Task<Video> task = Video.fromID(VIDEOID);
-            Video video = task.Result;
+            Video video = await Video.fromID(VIDEOID);
+            Assert.IsFalse(video.Success);
+        }
+
+        [TestMethod]
+        public async Task GetDownloadData(){
+            SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
+            
+            Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);
             List<VideoFile> videoFiles = video.ExtractFiles();
             Assert.IsNotNull(videoFiles);

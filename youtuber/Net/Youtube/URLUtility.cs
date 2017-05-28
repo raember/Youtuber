@@ -36,31 +36,31 @@ namespace youtuber.net
                 case "youtube.com":
                 case "www.m.youtube.com":
                 case "m.youtube.com":
-                    result |= URLResult.isVideo;
+                    result |= URLResult.IsVideo;
                     match = Regex.Match(uri.PathAndQuery, VIDEO1PATHQUERYVALIDATIONPATTERN);
                     if (match.Success) {
-                        result |= URLResult.hasVideoID;
-                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        result |= URLResult.HasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.IsPlaylist;
                         isValid = true;
                     }
                     break;
                 case "www.youtu.be":
                 case "youtu.be":
-                    result |= URLResult.isVideo;
+                    result |= URLResult.IsVideo;
                     match = Regex.Match(uri.PathAndQuery, VIDEO2PATHQUERYVALIDATIONPATTERN);
                     if (match.Success) {
-                        result |= URLResult.hasVideoID;
-                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        result |= URLResult.HasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.IsPlaylist;
                         isValid = true;
                     }
                     break;
                 case "www.youtube-nocookie.com":
                 case "youtube-nocookie.com":
-                    result |= URLResult.isVideo;
+                    result |= URLResult.IsVideo;
                     match = Regex.Match(uri.PathAndQuery, VIDEO3PATHQUERYVALIDATIONPATTERN);
                     if (match.Success) {
-                        result |= URLResult.hasVideoID;
-                        if (match.Groups["pl"].Success) result |= URLResult.isPlaylist;
+                        result |= URLResult.HasVideoID;
+                        if (match.Groups["pl"].Success) result |= URLResult.IsPlaylist;
                         isValid = true;
                     }
                     break;
@@ -70,10 +70,10 @@ namespace youtuber.net
                 case "i2.ytimg.com":
                 case "i3.ytimg.com":
                 case "i4.ytimg.com":
-                    result |= URLResult.isImage;
+                    result |= URLResult.IsImage;
                     match = Regex.Match(uri.PathAndQuery, IMAGEPATHQUERYVALIDATIONPATTERN);
                     if (match.Success) {
-                        result |= URLResult.hasVideoID;
+                        result |= URLResult.HasVideoID;
                         isValid = true;
                     }
                     break;
@@ -83,7 +83,7 @@ namespace youtuber.net
                        string.IsNullOrWhiteSpace(uri.UserInfo) &&
                        (uri.Port == -1 ||
                         uri.Port == 443);
-            if (isValid) result |= URLResult.isValid;
+            if (isValid) result |= URLResult.IsValid;
             return result;
         }
 
@@ -111,10 +111,10 @@ namespace youtuber.net
     [Flags]
     public enum URLResult
     {
-        isValid = 1 << 0,
-        hasVideoID = 1 << 1,
-        isVideo = 1 << 2,
-        isPlaylist = 1 << 3,
-        isImage = 1 << 4
+        IsValid = 1 << 0,
+        HasVideoID = 1 << 1,
+        IsVideo = 1 << 2,
+        IsPlaylist = 1 << 3,
+        IsImage = 1 << 4
     }
 }
