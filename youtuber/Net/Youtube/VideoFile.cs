@@ -18,6 +18,30 @@ namespace youtuber.Net.Youtube
         public Dictionary<string, string> Arguments {get;}
         public int ITag {get;}
         public Container DefaultContainer {get;}
+
+        public string Extension
+        {
+            get
+            {
+                switch (DefaultContainer) {
+                        case Container.FLV:
+                            return ".flv";
+                        case Container.M4A:
+                            return ".m4a";
+                        case Container.MP4:
+                            return ".mp4";
+                        case Container.TS:
+                            return ".ts";
+                        case Container.ThreeGP:
+                            return ".3gp";
+                        case Container.WebM:
+                            return ".webm";
+                        default:
+                            return string.Empty;
+                }
+            }
+        }
+
         protected string PlayerVersion {get; private set;}
 
         internal VideoFile ConsumeFormatString(string rawFormat){
