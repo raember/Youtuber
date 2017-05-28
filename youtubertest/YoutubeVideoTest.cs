@@ -93,7 +93,14 @@ namespace youtubertest
             Assert.IsTrue(video.Success);
             List<VideoFile> videoFiles = video.ExtractFiles();
             Assert.IsNotNull(videoFiles);
-            //TODO: Finish test...
+            VideoFile videoFile = videoFiles.First(vf => vf.ITag == 247);
+            Assert.IsNotNull(videoFile);
+            Uri link = videoFile.GetDownloadUri().Result;
+            Assert.IsNotNull(link);
+            Uri referenceUri =
+                new Uri(
+                    "https://r2---sn-nfpnnjvh-9an6.googlevideo.com/videoplayback?source=youtube&sparams=clen,dur,ei,gir,id,initcwndbps,ip,ipbits,itag,keepalive,lmt,mime,mm,mn,ms,mv,pcm2cms,pl,requiressl,source,expire&clen=27525886&mime=video/webm&requiressl=yes&expire=1495746057&gir=yes&mm=31&ms=au&ei=qfEmWeucIYircI2YsvgH&mv=m&pl=45&mt=1495724371&pcm2cms=yes&ip=2a02:1205:5078:a750:3c6c:1d0e:4be3:c31c&id=o-AGFlAJjaiQ9KzoAQW07hluBljk-WchtQ7l8J8ET4AzFM&keepalive=yes&mn=sn-nfpnnjvh-9an6&itag=247&ipbits=0&initcwndbps=7265000&dur=343.541&key=yt6&lmt=1449576890172300&signature=D9371C436678D2D6C2878F0788A7DB08232F09DB.5010C1AC7B935240BA998B59F97872F231C1AE16&ratebypass=yes");
+            Assert.AreEqual(referenceUri, link);
         }
     }
 }

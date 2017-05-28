@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace youtuber.Net.Youtube
 {
@@ -17,6 +18,7 @@ namespace youtuber.Net.Youtube
         public Dictionary<string, string> Arguments {get;}
         public int ITag {get;}
         public Container DefaultContainer {get;}
+        protected string PlayerVersion {get; private set;}
 
         internal VideoFile ConsumeFormatString(string rawFormat){
             foreach (var keyvaluepair in rawFormat.Split('&')) {
@@ -27,13 +29,20 @@ namespace youtuber.Net.Youtube
             return this;
         }
 
-        public static VideoFile FromFormatString(string format){
-            var itag = int.Parse(Regex.Match(format, @"(?<=itag\=)\d+?(?=&)").Value);
-            if (NonDash.Available.Contains(itag)) return NonDash.FromITag(itag);
-            if (DashVideo.Available.Contains(itag)) return DashVideo.FromITag(itag);
-            if (DashAudio.Available.Contains(itag)) return DashAudio.FromITag(itag);
-            throw new Exception("I don't know the format corresponding to ITag " + itag);
+        public static VideoFile FromFormatString(string format, string playerVersion){
+            var itag = int.Parse(Regex.Match(format, @"(?<=itag\=)\d+?(?=&|$)").Value);
+            VideoFile videoFile = null;
+            if (NonDash.Available.Contains(itag)) videoFile = NonDash.FromITag(itag);
+            else if (
+                DashVideo.Available.Contains(itag)) videoFile = DashVideo.FromITag(itag);
+            else if (
+                DashAudio.Available.Contains(itag)) videoFile = DashAudio.FromITag(itag);
+            if (videoFile == null) throw new Exception("I don't know the format corresponding to ITag " + itag);
+            videoFile.PlayerVersion = playerVersion;
+            return videoFile.ConsumeFormatString(format);
         }
+
+        public abstract Task<Uri> GetDownloadUri();
 
         public override string ToString(){
             return $"{ITag} : {DefaultContainer}";
@@ -82,6 +91,15 @@ namespace youtuber.Net.Youtube
                     case 96: return new NonDash(iTag, Container.TS,     1080, 24, VideoEncoding.H264,        VideoProfile.High,     2.5,   6,     AudioEncoding.AAC,    256);
                     default: throw new ArgumentException($"No mapping for itag {iTag} implemented", nameof(iTag));
                 }
+            }
+
+            public override async Task<Uri> GetDownloadUri(){
+                var url = Arguments["url"];
+                if (Arguments.ContainsKey("s")) {
+                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    url += $"&signature={signature}";
+                }
+                return new Uri(url);
             }
 
             public override string ToString(){
@@ -153,6 +171,17 @@ namespace youtuber.Net.Youtube
                 }
             }
 
+            public override async Task<Uri> GetDownloadUri(){
+                var url = Arguments["url"];
+                if (Arguments.ContainsKey("s")) {
+                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    signature = (await Decipherer.GetDecipherer(PlayerVersion)).Decipher(signature);
+                    url += $"&signature={signature}";
+                }
+                if (!Regex.IsMatch(url, @"&ratebypass")) url += "&ratebypass=yes";
+                return new Uri(url);
+            }
+
             public override string ToString(){
                 return $"{ITag} (dash video): {DefaultContainer}, {VideoResolution}p";
             }
@@ -173,13 +202,24 @@ namespace youtuber.Net.Youtube
 
             internal static VideoFile FromITag(int iTag){
                 switch (iTag) { //                 itag,    format     ,   encoding(audio)   ,bitr
-                    case 140: return new DashAudio(iTag, Container.M4A,  AudioEncoding.AAC,    128);
+                    case 140: return new DashAudio(iTag, Container.M4A, AudioEncoding.AAC, 128);
                     case 171: return new DashAudio(iTag, Container.WebM, AudioEncoding.Vorbis, 128);
-                    case 249: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,   48);
-                    case 250: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,   48);
-                    case 251: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,  160);
+                    case 249: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 48);
+                    case 250: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 48);
+                    case 251: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 160);
                     default: throw new ArgumentException($"No mapping for itag {iTag} implemented", nameof(iTag));
                 }
+            }
+
+            public override async Task<Uri> GetDownloadUri(){
+                var url = Arguments["url"];
+                if (Arguments.ContainsKey("s")) {
+                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    signature = (await Decipherer.GetDecipherer(PlayerVersion)).Decipher(signature);
+                    url += $"&signature={signature}";
+                }
+                if (!Regex.IsMatch(url, @"&ratebypass")) url += "&ratebypass=yes";
+                return new Uri(url);
             }
 
             public override string ToString(){

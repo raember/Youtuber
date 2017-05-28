@@ -149,12 +149,14 @@ namespace youtuber.net
             adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
             string urlencstreammapStr = json.args.url_encoded_fmt_stream_map;
             urlencstreammapStr = Regex.Unescape(urlencstreammapStr);
+            string jsassets = json.assets.js;
+            string playerVersion = Regex.Match(jsassets, @"(?<=player-).+?(?=/)").Value;
             List<VideoFile> formats = new List<VideoFile>();
             foreach (string formatStr in adaptiveFormatStr.Split(',')) {
-                formats.Add(VideoFile.FromFormatString(formatStr));
+                formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
             }
             foreach (string formatStr in urlencstreammapStr.Split(',')) {
-                formats.Add(VideoFile.FromFormatString(formatStr));
+                formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
             }
             return formats;
         }

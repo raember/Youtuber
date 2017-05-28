@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Net\InternetSite.cs" />
+    <Compile Include="Net\Youtube\Decipherer.cs" />
     <Compile Include="Net\Youtube\URLUtility.cs" />
     <Compile Include="Net\Youtube\Recommendation.cs" />
     <Compile Include="Net\Youtube\Video.cs" />
