@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using youtuber.Net.Youtube;
 
 namespace youtubertest
@@ -10,8 +7,8 @@ namespace youtubertest
     [TestClass]
     public class DeciphererTest
     {
-        private static string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-        private static string fileContent = File.ReadAllText(Path.Combine(basePath, "baseTest.js"));
+        private static readonly string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+        private static readonly string fileContent = File.ReadAllText(Path.Combine(basePath, "baseTest.js"));
 
         [TestMethod]
         public void CorrectFunctions(){
@@ -37,10 +34,12 @@ namespace youtubertest
 
         [TestMethod]
         public void DecipherSignature(){
-            string signature = "2D9D9371C436678DDD6C2878F0788A7DB08232F09DB.5010C1AC6B935240BA998B59F97872F231C1AE1617617";
+            string signature =
+                "2D9D9371C436678DDD6C2878F0788A7DB08232F09DB.5010C1AC6B935240BA998B59F97872F231C1AE1617617";
             Decipherer decipherer = Decipherer.GetDecipherer("playerversion", fileContent).Result;
             string deciphered = decipherer.Decipher(signature);
-            Assert.AreEqual("D9371C436678D2D6C2878F0788A7DB08232F09DB.5010C1AC7B935240BA998B59F97872F231C1AE16", deciphered);
+            Assert.AreEqual("D9371C436678D2D6C2878F0788A7DB08232F09DB.5010C1AC7B935240BA998B59F97872F231C1AE16",
+                deciphered);
         }
     }
 }

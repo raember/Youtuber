@@ -14,8 +14,8 @@ namespace youtuber.Net.Youtube
         public static WebClient webClient = new WebClient();
 
         public static readonly Func<string, int, string> Swap = (cipher, index) => {
-                                                                    var sb = new StringBuilder(cipher);
-                                                                    var c = cipher[0];
+                                                                    StringBuilder sb = new StringBuilder(cipher);
+                                                                    char c = cipher[0];
                                                                     sb[0] = cipher[index % cipher.Length];
                                                                     sb[index % cipher.Length] = c;
                                                                     return sb.ToString();
@@ -29,11 +29,11 @@ namespace youtuber.Net.Youtube
 
         private static readonly Hashtable Decipherers = new Hashtable(new Dictionary<string, Decipherer>());
 
-        private readonly List<Tuple<Func<string, int, string>, int>> operations =
-            new List<Tuple<Func<string, int, string>, int>>();
-
         private readonly string fileContent;
         private readonly Hashtable functionMapping = new Hashtable(new Dictionary<string, Func<string, int, string>>());
+
+        private readonly List<Tuple<Func<string, int, string>, int>> operations =
+            new List<Tuple<Func<string, int, string>, int>>();
 
         private Decipherer(string playerVersion, string fileContent){
             this.fileContent = fileContent;
@@ -43,21 +43,21 @@ namespace youtuber.Net.Youtube
         public Uri Uri {get;}
 
         private async Task Setup(){
-            var funcName = Regex.Match(fileContent, @"(?<=""signature"",)[\w\d\$]+?(?=\()").Value;
+            string funcName = Regex.Match(fileContent, @"(?<=""signature"",)[\w\d\$]+?(?=\()").Value;
             funcName = Regex.Escape(funcName);
-            var funcBody = Regex.Match(fileContent,
+            string funcBody = Regex.Match(fileContent,
                 @"(?<=;[\s\r\n]*?" + funcName + @"\=function\(\w+\)\{).*?(?=\};)").Value;
-            var family = string.Empty;
-            var functionPool = string.Empty;
-            var funcPoolParsed = false;
-            foreach (var line in funcBody.Split(';')) {
-                var match = Regex.Match(line, @"(?<family>\w+?)\.(?<name>\w+?)\(\w+?,(?<index>\d+?)\)");
+            string family = string.Empty;
+            string functionPool = string.Empty;
+            bool funcPoolParsed = false;
+            foreach (string line in funcBody.Split(';')) {
+                Match match = Regex.Match(line, @"(?<family>\w+?)\.(?<name>\w+?)\(\w+?,(?<index>\d+?)\)");
                 if (!match.Success) continue;
-                var parsedFamily = match.Groups["family"].Value;
+                string parsedFamily = match.Groups["family"].Value;
                 if (string.IsNullOrEmpty(family)) family = parsedFamily;
                 if (!family.Equals(parsedFamily)) throw new Exception("The function changed unexpectedly");
-                var function = match.Groups["name"].Value;
-                var index = int.Parse(match.Groups["index"].Value);
+                string function = match.Groups["name"].Value;
+                int index = int.Parse(match.Groups["index"].Value);
                 if (!functionMapping.ContainsKey(function)) {
                     if (!funcPoolParsed) {
                         functionPool = Regex.Match(fileContent, @"(?<=\W" + family + @"\=\{).*?(?=\};)",
@@ -73,16 +73,16 @@ namespace youtuber.Net.Youtube
                         functionMapping.Add(function, Reverse);
                     else throw new Exception($"No function found for {function}");
                 }
-                var operation = (Func<string, int, string>) functionMapping[function];
+                Func<string, int, string> operation = (Func<string, int, string>) functionMapping[function];
                 operations.Add(new Tuple<Func<string, int, string>, int>(operation, index));
             }
         }
 
         public string Decipher(string signature){
-            var deciphered = new string(signature.ToCharArray());
-            foreach (var functionTuple in operations) {
-                var function = functionTuple.Item1;
-                var index = functionTuple.Item2;
+            string deciphered = new string(signature.ToCharArray());
+            foreach (Tuple<Func<string, int, string>, int> functionTuple in operations) {
+                Func<string, int, string> function = functionTuple.Item1;
+                int index = functionTuple.Item2;
                 deciphered = function.Invoke(deciphered, index);
             }
             return deciphered;
@@ -90,7 +90,7 @@ namespace youtuber.Net.Youtube
 
         public static async Task<Decipherer> GetDecipherer(string playerVersion, string fileContent){
             if (Decipherers.ContainsKey(playerVersion)) return (Decipherer) Decipherers[playerVersion];
-            var decipherer = new Decipherer(playerVersion, fileContent);
+            Decipherer decipherer = new Decipherer(playerVersion, fileContent);
             await decipherer.Setup();
             Decipherers.Add(playerVersion, decipherer);
             return decipherer;

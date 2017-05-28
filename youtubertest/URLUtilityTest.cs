@@ -1,12 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using youtuber.net;
-using youtuber.Net.Youtube;
 
-namespace youtubertest {
+namespace youtubertest
+{
     [TestClass]
     public class URLUtilityTest
     {
@@ -27,7 +24,7 @@ namespace youtubertest {
                 "https://www.youtu.be/" + VIDEOID,
                 "https://youtu.be/" + VIDEOID,
                 "https://www.youtube-nocookie.com/embed/" + VIDEOID,
-                "https://youtube-nocookie.com/embed/" + VIDEOID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID
             }) {
                 Uri uri = new Uri(url);
                 Assert.AreEqual(validVideo, URLUtility.AnalyzeURI(uri));
@@ -87,7 +84,7 @@ namespace youtubertest {
                 "https://www.youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
                 "https://youtu.be/" + VIDEOID + "&list=" + PLAYLISTID,
                 "https://www.youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
-                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID,
+                "https://youtube-nocookie.com/embed/" + VIDEOID + "&list=" + PLAYLISTID
             }) {
                 Uri uri = new Uri(url);
                 Assert.IsFalse(URLUtility.AnalyzeURI(uri).HasFlag(URLResult.isValid));

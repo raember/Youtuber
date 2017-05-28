@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using youtuber.net;
 using youtuber.Net.Youtube;
 
@@ -16,10 +15,10 @@ namespace youtubertest
     public class YoutubeVideoTest
     {
         private const string VIDEOID = "TWcyIpul8OE";
-        private Mock<HttpWebRequest> httpWebRequestMock = new Mock<HttpWebRequest>();
-        private Mock<HttpWebResponse> httpWebResponseMock = new Mock<HttpWebResponse>();
-        private string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+        private readonly string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
         private FileStream fileStream;
+        private readonly Mock<HttpWebRequest> httpWebRequestMock = new Mock<HttpWebRequest>();
+        private readonly Mock<HttpWebResponse> httpWebResponseMock = new Mock<HttpWebResponse>();
 
         [TestInitialize]
         public void Initialize(){
@@ -69,23 +68,23 @@ namespace youtubertest
 
             Recommendation recomm = relatedVideos.First();
             Assert.IsTrue(recomm.GetType() == typeof(Recommendation.Video));
-            Recommendation.Video videoRecomm = (Recommendation.Video)recomm;
+            Recommendation.Video videoRecomm = (Recommendation.Video) recomm;
             Assert.AreEqual("Bon Iver - Towers (Official Music Video)", videoRecomm.Title);
             Assert.AreEqual("t60roHM1t7o", videoRecomm.VideoID);
-            Assert.AreEqual(new TimeSpan(0,4,51), videoRecomm.Duration);
+            Assert.AreEqual(new TimeSpan(0, 4, 51), videoRecomm.Duration);
             Assert.AreEqual(7511628, videoRecomm.Views);
             Assert.AreEqual("boniver", videoRecomm.Username);
 
             recomm = relatedVideos[1];
             Assert.IsTrue(recomm.GetType() == typeof(Recommendation.Playlist));
-            Recommendation.Playlist playlistRecomm = (Recommendation.Playlist)recomm;
+            Recommendation.Playlist playlistRecomm = (Recommendation.Playlist) recomm;
             Assert.IsTrue(playlistRecomm.Title.EndsWith("Bon Iver - Holocene (Official Music Video)"));
             Assert.AreEqual("TWcyIpul8OE", playlistRecomm.VideoID);
             Assert.AreEqual("RDTWcyIpul8OE", playlistRecomm.PlaylistID);
         }
 
         [TestMethod]
-        public void GetDownloadData() {
+        public void GetDownloadData(){
             SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
 
             Task<Video> task = Video.fromID(VIDEOID);

@@ -24,20 +24,20 @@ namespace youtuber.Net.Youtube
             get
             {
                 switch (DefaultContainer) {
-                        case Container.FLV:
-                            return ".flv";
-                        case Container.M4A:
-                            return ".m4a";
-                        case Container.MP4:
-                            return ".mp4";
-                        case Container.TS:
-                            return ".ts";
-                        case Container.ThreeGP:
-                            return ".3gp";
-                        case Container.WebM:
-                            return ".webm";
-                        default:
-                            return string.Empty;
+                    case Container.FLV:
+                        return ".flv";
+                    case Container.M4A:
+                        return ".m4a";
+                    case Container.MP4:
+                        return ".mp4";
+                    case Container.TS:
+                        return ".ts";
+                    case Container.ThreeGP:
+                        return ".3gp";
+                    case Container.WebM:
+                        return ".webm";
+                    default:
+                        return string.Empty;
                 }
             }
         }
@@ -45,16 +45,16 @@ namespace youtuber.Net.Youtube
         protected string PlayerVersion {get; private set;}
 
         internal VideoFile ConsumeFormatString(string rawFormat){
-            foreach (var keyvaluepair in rawFormat.Split('&')) {
-                var key = WebUtility.UrlDecode(keyvaluepair.Split('=')[0]);
-                var value = WebUtility.UrlDecode(WebUtility.UrlDecode(keyvaluepair.Split('=')[1]));
+            foreach (string keyvaluepair in rawFormat.Split('&')) {
+                string key = WebUtility.UrlDecode(keyvaluepair.Split('=')[0]);
+                string value = WebUtility.UrlDecode(WebUtility.UrlDecode(keyvaluepair.Split('=')[1]));
                 Arguments.Add(key, value);
             }
             return this;
         }
 
         public static VideoFile FromFormatString(string format, string playerVersion){
-            var itag = int.Parse(Regex.Match(format, @"(?<=itag\=)\d+?(?=&|$)").Value);
+            int itag = int.Parse(Regex.Match(format, @"(?<=itag\=)\d+?(?=&|$)").Value);
             VideoFile videoFile = null;
             if (NonDash.Available.Contains(itag)) videoFile = NonDash.FromITag(itag);
             else if (
@@ -118,9 +118,9 @@ namespace youtuber.Net.Youtube
             }
 
             public override async Task<Uri> GetDownloadUri(){
-                var url = Arguments["url"];
+                string url = Arguments["url"];
                 if (Arguments.ContainsKey("s")) {
-                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    string signature = WebUtility.UrlEncode(Arguments["s"]);
                     url += $"&signature={signature}";
                 }
                 return new Uri(url);
@@ -196,9 +196,9 @@ namespace youtuber.Net.Youtube
             }
 
             public override async Task<Uri> GetDownloadUri(){
-                var url = Arguments["url"];
+                string url = Arguments["url"];
                 if (Arguments.ContainsKey("s")) {
-                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    string signature = WebUtility.UrlEncode(Arguments["s"]);
                     signature = (await Decipherer.GetDecipherer(PlayerVersion)).Decipher(signature);
                     url += $"&signature={signature}";
                 }
@@ -226,19 +226,19 @@ namespace youtuber.Net.Youtube
 
             internal static VideoFile FromITag(int iTag){
                 switch (iTag) { //                 itag,    format     ,   encoding(audio)   ,bitr
-                    case 140: return new DashAudio(iTag, Container.M4A, AudioEncoding.AAC, 128);
+                    case 140: return new DashAudio(iTag, Container.M4A,  AudioEncoding.AAC,    128);
                     case 171: return new DashAudio(iTag, Container.WebM, AudioEncoding.Vorbis, 128);
-                    case 249: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 48);
-                    case 250: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 48);
-                    case 251: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus, 160);
+                    case 249: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,   48);
+                    case 250: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,   48);
+                    case 251: return new DashAudio(iTag, Container.WebM, AudioEncoding.Orpus,  160);
                     default: throw new ArgumentException($"No mapping for itag {iTag} implemented", nameof(iTag));
                 }
             }
 
             public override async Task<Uri> GetDownloadUri(){
-                var url = Arguments["url"];
+                string url = Arguments["url"];
                 if (Arguments.ContainsKey("s")) {
-                    var signature = WebUtility.UrlEncode(Arguments["s"]);
+                    string signature = WebUtility.UrlEncode(Arguments["s"]);
                     signature = (await Decipherer.GetDecipherer(PlayerVersion)).Decipher(signature);
                     url += $"&signature={signature}";
                 }

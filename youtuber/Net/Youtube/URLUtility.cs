@@ -29,7 +29,7 @@ namespace youtuber.net
         /// <returns>an Enum representing the essential properties of the uri</returns>
         public static URLResult AnalyzeURI(Uri uri){
             URLResult result = 0;
-            var isValid = false;
+            bool isValid = false;
             Match match;
             switch (uri.Host) {
                 case "www.youtube.com":
@@ -93,7 +93,7 @@ namespace youtuber.net
         /// <param name="uri">the uri to be parsed</param>
         /// <returns>the video ID within the uri</returns>
         public static string ExtractVideoID(Uri uri){
-            var match = Regex.Match(uri.PathAndQuery, @"(?<=/watch\?v\=|/embed/|/vi/|/)" + VIDEOIDPATTERN);
+            Match match = Regex.Match(uri.PathAndQuery, @"(?<=/watch\?v\=|/embed/|/vi/|/)" + VIDEOIDPATTERN);
             return match.Groups["id"].Value;
         }
 
@@ -103,7 +103,7 @@ namespace youtuber.net
         /// <param name="uri">the uri to be parsed</param>
         /// <returns>the playlist ID within the uri</returns>
         public static string ExtractPlaylistID(Uri uri){
-            var match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERN);
+            Match match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERN);
             return match.Groups["pl"].Value;
         }
     }

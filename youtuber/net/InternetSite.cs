@@ -48,9 +48,9 @@ namespace youtuber.net
 
         protected async Task Load(){
             response = (HttpWebResponse) await request.GetResponseAsync();
-            var responseStream = response.GetResponseStream();
+            Stream responseStream = response.GetResponseStream();
             if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
-            using (var strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
+            using (StreamReader strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
                 content = await strmReader.ReadToEndAsync();
                 strmReader.DiscardBufferedData();
             }
