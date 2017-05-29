@@ -52,7 +52,6 @@ namespace youtuber.net
             if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
             using (StreamReader strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
                 content = await strmReader.ReadToEndAsync();
-                strmReader.DiscardBufferedData();
             }
             Success = true;
         }

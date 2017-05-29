@@ -8,13 +8,16 @@ namespace youtuber.net
     /// </summary>
     public static class URLUtility
     {
-        private const string VIDEOIDPATTERN = @"(?<id>[a-zA-Z0-9_-]{11})";
-        private const string PLAYLISTPATTERN = @"(?<pl>[a-zA-Z0-9_-]{13})";
+        private const string VIDEOIDPATTERN = @"(?<id>[\w\d_-]{11})";
+        private const string PLAYLISTPATTERNSHORT = @"(?<pl>[\w\d_-]{13})";
+        private const string PLAYLISTPATTERNLONG = @"(?<pl>[\w\d_-]{34})";
 
         private const string VIDEO1PATHQUERYVALIDATIONPATTERN =
-            @"^/watch\?v\=" + VIDEOIDPATTERN + @"(&list\=" + PLAYLISTPATTERN + "|)";
+            @"^/watch\?v\=" + VIDEOIDPATTERN + @"(&list\=" + PLAYLISTPATTERNSHORT + "|)";
 
         private const string VIDEO2PATHQUERYVALIDATIONPATTERN = @"^/" + VIDEOIDPATTERN + "$";
+
+        private const string PLAYLISTPATHQUERYVALIDATIONPATTERN = @"^/playlist\?list=" + PLAYLISTPATTERNLONG + "$";
 
         private const string VIDEO3PATHQUERYVALIDATIONPATTERN = @"^/embed/" + VIDEOIDPATTERN + "$";
 
@@ -36,12 +39,17 @@ namespace youtuber.net
                 case "youtube.com":
                 case "www.m.youtube.com":
                 case "m.youtube.com":
-                    result |= URLResult.IsVideo;
                     match = Regex.Match(uri.PathAndQuery, VIDEO1PATHQUERYVALIDATIONPATTERN);
                     if (match.Success) {
+                        result |= URLResult.IsVideo;
                         result |= URLResult.HasVideoID;
                         if (match.Groups["pl"].Success) result |= URLResult.IsPlaylist;
                         isValid = true;
+                    } else {
+                        if (Regex.IsMatch(uri.PathAndQuery, PLAYLISTPATHQUERYVALIDATIONPATTERN)) {
+                            result |= URLResult.IsPlaylist;
+                            isValid = true;
+                        }
                     }
                     break;
                 case "www.youtu.be":
@@ -103,7 +111,9 @@ namespace youtuber.net
         /// <param name="uri">the uri to be parsed</param>
         /// <returns>the playlist ID within the uri</returns>
         public static string ExtractPlaylistID(Uri uri){
-            Match match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERN);
+            Match match = Regex.Match(uri.Query, @"(?<=&list\=)" + PLAYLISTPATTERNSHORT);
+            if (match.Success) return match.Groups["pl"].Value;
+            match = Regex.Match(uri.Query, @"(?<=\?playlist\=)" + PLAYLISTPATTERNLONG);
             return match.Groups["pl"].Value;
         }
     }

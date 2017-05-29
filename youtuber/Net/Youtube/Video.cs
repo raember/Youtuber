@@ -12,7 +12,6 @@ namespace youtuber.net
     public class Video : InternetSite
     {
         private Video(Uri uri) : base(uri){
-            Success &= !Regex.Match(content, @"id\=""unavailable-message""").Success;
         }
 
         public bool IsAvailable
@@ -131,24 +130,23 @@ namespace youtuber.net
         }
 
         private async Task<Video> LoadSite(){
-            if (DefaultHttpWebRequest != null) {
-                await Load();
-                return this;
+            if (DefaultHttpWebRequest == null) {
+                WebHeaderCollection headers = request.Headers;
+                //headers.Add("User-Agent", UserAgent);
+                request.UserAgent = UserAgent;
+                //headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                request.Accept = "text/html";
+                //headers.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.5");
+                //headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+                //headers.Add("DNT", "1");
+                //headers.Add("Upgrade-Insecure-Requests", "1");
+                //headers.Add("Connection", "keep-alive");
+                request.KeepAlive = true;
+                //headers.Add("Pragma", "no-cache");
+                //headers.Add("Cache-Control", "no-cache");
             }
-            WebHeaderCollection headers = request.Headers;
-            //headers.Add("User-Agent", UserAgent);
-            request.UserAgent = UserAgent;
-            //headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            request.Accept = "text/html";
-            //headers.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.5");
-            //headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
-            //headers.Add("DNT", "1");
-            //headers.Add("Upgrade-Insecure-Requests", "1");
-            //headers.Add("Connection", "keep-alive");
-            request.KeepAlive = true;
-            //headers.Add("Pragma", "no-cache");
-            //headers.Add("Cache-Control", "no-cache");
             await Load();
+            Success &= !Regex.Match(content, @"id\=""unavailable-message""").Success;
             return this;
         }
 

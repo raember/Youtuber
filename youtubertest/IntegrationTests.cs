@@ -14,7 +14,7 @@ namespace youtubertest
     public class IntegrationTests
     {
         [TestMethod]
-        public async Task IntegrationTest() {
+        public async Task IntegrationTest(){
             const string VIDEOID = "TWcyIpul8OE";
             const string PLAYLISTID = "RDd2Y4dFVgS8g";
             Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}");
@@ -26,7 +26,9 @@ namespace youtubertest
             URLResult result = URLUtility.AnalyzeURI(link);
 
             if (!result.HasFlag(URLResult.IsValid)) return;
-            if (result.HasFlag(URLResult.IsVideo)) { // You're a video, Harry!
+            if (result.HasFlag(URLResult.IsPlaylist)) { // You're a playlist, Harry!
+                // Not yet implemented
+            }else if(result.HasFlag(URLResult.IsVideo)) { // You're a video, Harry!
                 string videoId = URLUtility.ExtractVideoID(link);
                 Video video = await Video.fromID(videoId);
                 if (!video.Success) return;
@@ -64,8 +66,6 @@ namespace youtubertest
                 // Download (Don't do it like this. Do it properly, please)
                 byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
                 File.WriteAllBytes(Path.Combine(basePath, $"{title}{extension}"), data);
-            } else if (result.HasFlag(URLResult.IsPlaylist)) { // You're a playlist, Harry!
-                // Not yet implemented
             } else if (result.HasFlag(URLResult.IsImage)) { // You're an image, Harry!
                 string videoId = URLUtility.ExtractVideoID(link);
 
