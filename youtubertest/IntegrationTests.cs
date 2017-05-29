@@ -79,7 +79,14 @@ namespace youtubertest
 
         [TestMethod]
         public async Task URLIntegrationTest(){
-            
+            Uri uri = new Uri("https://www.youtube.com/watch?v=BaW_jenozKc&t=1s&end=9");
+            string videoId = URLUtility.ExtractVideoID(uri);
+            Video video = await Video.fromID(videoId);
+            Assert.IsTrue(video.Success);
+            Assert.AreEqual("youtube-dl test video \"'/\\ä↭𝕐", video.Title);
+            Assert.AreEqual(new DateTime(2012, 10, 2), video.UploadedDateTime);
+            //Works so far
+            //TODO: Complete test transfer from youtube-dl
         }
     }
 }

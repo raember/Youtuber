@@ -14,15 +14,6 @@ namespace youtuber.net
         private Video(Uri uri) : base(uri){
         }
 
-        public bool IsAvailable
-        {
-            get
-            {
-                Match match = Regex.Match(content, @"id\=""unavailable-message""");
-                return !match.Success;
-            }
-        }
-
         public string Title
         {
             get
@@ -40,9 +31,9 @@ namespace youtuber.net
             get
             {
                 Match match = Regex.Match(content,
-                    @"(?<=\<strong class\=""watch-time-text""\>Uploaded on ).+?(?=\</strong\>)",
+                    @"(?<=meta\sitemprop\=""datePublished"" content\="")[\d-]+?(?="")",
                     RegexOptions.Singleline);
-                return DateTime.ParseExact(match.Value, "MMM dd, yyyy", new CultureInfo("en-US"));
+                return DateTime.ParseExact(match.Value, "yyyy-MM-dd", new CultureInfo("en-US"));
             }
         }
 
