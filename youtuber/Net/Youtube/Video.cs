@@ -146,7 +146,7 @@ namespace youtuber.net
                 //headers.Add("Cache-Control", "no-cache");
             }
             await Load();
-            Success &= !Regex.Match(content, @"id\=""unavailable-message""").Success;
+            Success &= !Regex.Match(content, @"id\=""player""[^""]*?class=""[^""]*?off-screen-trigger[^""]*?""").Success;
             return this;
         }
 

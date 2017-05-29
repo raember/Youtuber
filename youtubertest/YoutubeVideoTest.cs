@@ -86,7 +86,7 @@ namespace youtubertest
         public async Task DetectRemovedVideo(){
             SetMock(Path.Combine(basePath, "removedVideo.html"));
 
-            Video video = await Video.fromID(VIDEOID);
+            Video video = await Video.fromID("7KTLh716rGY");
             Assert.IsFalse(video.Success);
         }
 

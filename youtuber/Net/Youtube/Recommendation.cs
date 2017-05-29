@@ -16,7 +16,6 @@ namespace youtuber.net
         public string VideoID {get;}
 
         public static Recommendation FromLiElement(string liElement){
-            string title;
             string pathandquery = WebUtility.HtmlDecode(Regex.Match(liElement, @"(?<=href\="")[^""]+?(?="")").Value);
             Uri tempUri = new Uri("https://www.youtube.com" + pathandquery);
             string videoID = URLUtility.ExtractVideoID(tempUri);
