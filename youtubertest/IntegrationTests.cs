@@ -20,7 +20,6 @@ namespace youtubertest
             Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}");
             //Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}&list={PLAYLISTID}");
             //Uri link = new Uri($"https://img.youtube.com/vi/{VIDEOID}/0.jpg");
-            string basePath = ".";
 
             // Classify link
             URLResult result = URLUtility.AnalyzeURI(link);
@@ -65,7 +64,7 @@ namespace youtubertest
 
                 // Download (Don't do it like this. Do it properly, please)
                 byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
-                File.WriteAllBytes(Path.Combine(basePath, $"{title}{extension}"), data);
+                File.WriteAllBytes($"./{title}{extension}", data);
             } else if (result.HasFlag(URLResult.IsImage)) { // You're an image, Harry!
                 string videoId = URLUtility.ExtractVideoID(link);
 
@@ -74,8 +73,13 @@ namespace youtubertest
 
                 // Download (Don't do it like this. Do it properly, please)
                 byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
-                File.WriteAllBytes(Path.Combine(basePath, "image.jpg"), data);
+                File.WriteAllBytes("./image.jpg", data);
             }
+        }
+
+        [TestMethod]
+        public async Task URLIntegrationTest(){
+            
         }
     }
 }

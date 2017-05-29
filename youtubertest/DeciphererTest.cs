@@ -7,9 +7,6 @@ namespace youtubertest
     [TestClass]
     public class DeciphererTest
     {
-        private static readonly string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-        private static readonly string fileContent = File.ReadAllText(Path.Combine(basePath, "baseTest.js"));
-
         [TestMethod]
         public void CorrectFunctions(){
             Assert.AreEqual("ABCDE", Decipherer.Swap.Invoke("ABCDE", 0));
@@ -32,8 +29,10 @@ namespace youtubertest
             Assert.AreEqual("", Decipherer.Splice.Invoke("ABCDE", 7));
         }
 
+        [DeploymentItem("../../TestData")]
         [TestMethod]
         public void DecipherSignature(){
+            string fileContent = File.ReadAllText("./baseTest.js");
             string signature =
                 "2D9D9371C436678DDD6C2878F0788A7DB08232F09DB.5010C1AC6B935240BA998B59F97872F231C1AE1617617";
             Decipherer decipherer = Decipherer.GetDecipherer("playerversion", fileContent).Result;
