@@ -37,9 +37,10 @@ namespace youtubertest
             InternetSite.DefaultHttpWebRequest = null;
         }
 
+        [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task GetVideoData(){
-            SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
+            SetMock("./HoloceneVideo.html");
             
             Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);
@@ -82,17 +83,19 @@ namespace youtubertest
             Assert.AreEqual("RDTWcyIpul8OE", playlistRecomm.PlaylistID);
         }
 
+        [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task DetectRemovedVideo(){
-            SetMock(Path.Combine(basePath, "removedVideo.html"));
+            SetMock("./removedVideo.html");
 
             Video video = await Video.fromID("7KTLh716rGY");
             Assert.IsFalse(video.Success);
         }
 
+        [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task GetDownloadData(){
-            SetMock(Path.Combine(basePath, "HoloceneVideo.html"));
+            SetMock("./HoloceneVideo.html");
             
             Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);

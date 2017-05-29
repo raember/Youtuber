@@ -11,8 +11,8 @@ using youtuber.Net.Youtube;
 namespace youtubertest
 {
     [TestClass]
-    public class IntegrationTests
-    {
+    public class IntegrationTests {
+        [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task IntegrationTest(){
             const string VIDEOID = "TWcyIpul8OE";
@@ -20,7 +20,7 @@ namespace youtubertest
             Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}");
             //Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}&list={PLAYLISTID}");
             //Uri link = new Uri($"https://img.youtube.com/vi/{VIDEOID}/0.jpg");
-            string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            string basePath = ".";
 
             // Classify link
             URLResult result = URLUtility.AnalyzeURI(link);

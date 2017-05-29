@@ -21,7 +21,7 @@ namespace youtuber.net
             string videoID = URLUtility.ExtractVideoID(tempUri);
             Match videoContent = Regex.Match(liElement,
                 @"\<div class\=""content-wrapper""\>\s*?\<a\s.*?\</a\>\s*?\</div\>", RegexOptions.Singleline);
-            if (videoContent.Success) return FromLiElement(videoContent.Value);
+            if (videoContent.Success) return Video.FromLiElement(videoContent.Value, videoID);
             string playlistId = URLUtility.ExtractPlaylistID(tempUri);
             return Playlist.FromLiElement(liElement, videoID, playlistId);
         }
