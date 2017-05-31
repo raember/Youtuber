@@ -99,7 +99,7 @@ namespace youtuber.Net.Youtube
         public static async Task<Decipherer> GetDecipherer(string playerVersion){
             return await GetDecipherer(playerVersion,
                 await webClient.DownloadStringTaskAsync(
-                    $"http://s.ytimg.com/yts/jsbin/player-{playerVersion}/en_US/base.js"));
+                    $"http://s.ytimg.com{playerVersion}"));
         }
     }
 }

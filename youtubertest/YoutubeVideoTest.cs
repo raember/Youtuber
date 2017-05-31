@@ -41,27 +41,31 @@ namespace youtubertest
         [TestMethod]
         public async Task GetVideoData(){
             SetMock("./HoloceneVideo.html");
-            
+
             Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);
             Assert.AreEqual(VIDEOID, video.VideoID);
             Assert.AreEqual("Bon Iver - Holocene (Official Music Video)", video.Title);
             Assert.AreEqual(new DateTime(2011, 8, 17), video.UploadedDateTime);
-            Assert.AreEqual(
-                "Director: NABIL (NABIL.com)<br />" +
-                "Producer: Jill Hammer<br />" +
-                "Production Company: NE Direction<br />" +
-                "Editor: Isaac Hagy<br />" +
-                "DOP: Larkin Sieple<br />" +
-                "<br />" +
-                "boniver.org<br />" +
-                "jagjaguwar.com",
+            Assert.AreEqual("Director: NABIL (NABIL.com)\n" +
+                            "Producer: Jill Hammer\n" +
+                            "Production Company: NE Direction\n" +
+                            "Editor: Isaac Hagy\n" +
+                            "DOP: Larkin Sieple\n" +
+                            "\n" +
+                            "boniver.org\n" +
+                            "jagjaguwar.com",
                 video.Description);
-            Assert.AreEqual("boniver", video.Username);
+            Assert.AreEqual("boniver", video.UserID);
+            Assert.AreEqual("boniver", video.User);
             Assert.AreEqual(31305565, video.Views);
             Assert.AreEqual(171471, video.Likes);
             Assert.AreEqual(3202, video.Dislikes);
             Assert.AreEqual(235000, video.Subscribers);
+            Assert.AreEqual(new TimeSpan(0, 5, 44), video.Duration);
+            Assert.AreEqual(3, video.Keywords.Count);
+            Assert.AreEqual(new DateTime(2017, 5, 25, 17, 0, 57), video.RequestTime);
+            Assert.AreEqual(new DateTime(2011, 8, 17), video.UploadedDateTime);
 
             List<Recommendation> relatedVideos = video.RelatedVideos;
             Assert.IsTrue(relatedVideos.Count == 20);
@@ -96,7 +100,7 @@ namespace youtubertest
         [TestMethod]
         public async Task GetDownloadData(){
             SetMock("./HoloceneVideo.html");
-            
+
             Video video = await Video.fromID(VIDEOID);
             Assert.IsTrue(video.Success);
             List<VideoFile> videoFiles = video.ExtractFiles();

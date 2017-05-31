@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace youtuber.net
@@ -115,6 +118,17 @@ namespace youtuber.net
             if (match.Success) return match.Groups["pl"].Value;
             match = Regex.Match(uri.Query, @"(?<=\?playlist\=)" + PLAYLISTPATTERNLONG);
             return match.Groups["pl"].Value;
+        }
+
+        internal static Dictionary<string, string> ExtractParameters(string data){
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            foreach (string line in data.Split('&')) {
+                var splitted = line.Split('=');
+                string key = WebUtility.UrlDecode(splitted[0]);
+                string value = WebUtility.UrlDecode(WebUtility.UrlDecode(splitted[1]));
+                result.Add(key, value);
+            }
+            return result;
         }
     }
 

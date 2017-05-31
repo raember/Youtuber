@@ -9,18 +9,19 @@ using youtuber.Net.Youtube;
 
 namespace youtuber.net
 {
-    public class Video : InternetSite
-    {
-        private Video(Uri uri) : base(uri){
-        }
+    public class Video : InternetSite {
+        private Video(Uri uri) : base(uri) { }
+        private Video(Uri uri, CookieCollection cookies) : base(uri, cookies) { }
+
+        private dynamic json;
 
         public string Title
         {
             get
             {
-                Match match = Regex.Match(content,
-                    @"\<span id\=""eow-title"" class=""watch-title"" dir=""ltr"" title=""(?<title>.+?)""\>");
-                return WebUtility.HtmlDecode(match.Groups["title"].Value);
+                try { return WebUtility.HtmlDecode(json.args.title.ToString()); } catch (Exception) {
+                    return string.Empty;
+                }
             }
         }
 
@@ -33,7 +34,21 @@ namespace youtuber.net
                 Match match = Regex.Match(content,
                     @"(?<=meta\sitemprop\=""datePublished"" content\="")[\d-]+?(?="")",
                     RegexOptions.Singleline);
+                if (!match.Success) return DateTime.MinValue;
                 return DateTime.ParseExact(match.Value, "yyyy-MM-dd", new CultureInfo("en-US"));
+            }
+        }
+
+        public DateTime RequestTime
+        {
+            get {
+                try {
+                    DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    dtDateTime = dtDateTime.AddSeconds(int.Parse(json.args.timestamp.ToString())).ToLocalTime();
+                    return dtDateTime;
+                } catch (Exception) {
+                    return DateTime.MinValue;
+                }
             }
         }
 
@@ -41,30 +56,63 @@ namespace youtuber.net
         {
             get
             {
-                Match match = Regex.Match(content, @"\<p id\=""eow-description"" class="""" \>(?<description>.+?)</p>",
+                Match match = Regex.Match(content, @"(?<=id\=""eow-description""[^<>]*?\>).*?(?=\</p\>)",
                     RegexOptions.Singleline);
-                return WebUtility.HtmlDecode(match.Groups["description"].Value);
+                if (!match.Success) return string.Empty;
+                string description = match.Value;
+                description = Regex.Replace(description, @"\<a[^<>]*?data-url\=""([^""]+?)""[^<>]*?\>[^<>]*?\</a\>", @"$1");
+                description = Regex.Replace(description, @"\<br\s*?/\>", "\n");
+                return WebUtility.HtmlDecode(description);
             }
         }
 
-        public string Username
+        public string User
+        {
+            get {
+                try { return WebUtility.HtmlDecode(json.args.author.ToString()); } catch (Exception) {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public string UserID
         {
             get
             {
-                Match match = Regex.Match(content,
-                    @"\<div class\=""yt-user-info""\>.+?data-sessionlink\="".+?"" \>(?<name>.+?)\</a\>",
-                    RegexOptions.Singleline);
-                return WebUtility.HtmlDecode(match.Groups["name"].Value);
+                Match match = Regex.Match(content, @"(?<=www\.youtube\.com/user/)[^/""]+?(?="")");
+                if (!match.Success) return string.Empty;
+                return Regex.Unescape(match.Value);
+            }
+        }
+
+        public List<string> Keywords
+        {
+            get {
+                try {
+                    List<string> keywords = new List<string>(json.args.keywords.ToString().Split(','));
+                    return keywords.ConvertAll(Regex.Unescape);
+                } catch (Exception) {
+                    return new List<string>();
+                }
             }
         }
 
         public long Views
         {
+            get {
+                try { return long.Parse(json.args.view_count.ToString()); } catch (Exception) {
+                    return -1;
+                }
+            }
+        }
+
+        public TimeSpan Duration
+        {
             get
             {
-                Match match = Regex.Match(content, @"(?<=\<div class\=""watch-view-count""\>).+?(?=\sviews\</div\>)");
-                string str = match.Value.Replace(",", "");
-                return long.Parse(str);
+                try { return TimeSpan.FromSeconds(int.Parse(json.args.length_seconds.ToString())); } catch (Exception) {
+                    return TimeSpan.Zero;
+                }
             }
         }
 
@@ -74,6 +122,7 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=like-button-renderer-like-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
+                if (!match.Success) return 0;
                 string str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
@@ -85,6 +134,7 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=like-button-renderer-dislike-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
+                if (!match.Success) return 0;
                 string str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
@@ -96,6 +146,7 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=class\=""[^<>]*?yt-subscriber-count[^<>]*?title\="")[^""]*?(?="")");
+                if (!match.Success) return 0;
                 string str = match.Value.Replace("K", "000").Replace("M", "000000");
                 return long.Parse(str);
             }
@@ -113,7 +164,14 @@ namespace youtuber.net
             }
         }
 
-        public static async Task<Video> fromID(string videoID){
+        public static async Task<Video> fromID(string videoID, CookieCollection cookies) {
+            Uri uri = new Uri("https://www.youtube.com/watch?v=" + videoID);
+            Video youtubeVideo = await new Video(uri, cookies).LoadSite();
+            youtubeVideo.VideoID = videoID;
+            return youtubeVideo;
+        }
+
+        public static async Task<Video> fromID(string videoID) {
             Uri uri = new Uri("https://www.youtube.com/watch?v=" + videoID);
             Video youtubeVideo = await new Video(uri).LoadSite();
             youtubeVideo.VideoID = videoID;
@@ -137,24 +195,29 @@ namespace youtuber.net
                 //headers.Add("Cache-Control", "no-cache");
             }
             await Load();
-            Success &= !Regex.Match(content, @"id\=""player""[^""]*?class=""[^""]*?off-screen-trigger[^""]*?""").Success;
+            Success &= !Regex.Match(content, @"id\=""player""[^""]*?class=""[^""]*?off-screen-trigger[^""]*?""")
+                             .Success;
+            string jsonString = Regex.Match(content, @"(?<=ytplayer\.config\s\=\s){.*?}(?=;)").Value;
+            json = JsonConvert.DeserializeObject(jsonString);
             return this;
         }
 
         public List<VideoFile> ExtractFiles(){
-            string jsonString = Regex.Match(content, @"(?<=ytplayer\.config\s\=\s){.*?}(?=;)").Value;
-            dynamic json = JsonConvert.DeserializeObject(jsonString);
             string adaptiveFormatStr = json.args.adaptive_fmts;
+            adaptiveFormatStr = string.IsNullOrEmpty(adaptiveFormatStr) ? String.Empty : adaptiveFormatStr;
             adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
             string urlencstreammapStr = json.args.url_encoded_fmt_stream_map;
+            urlencstreammapStr = string.IsNullOrEmpty(urlencstreammapStr) ? String.Empty : urlencstreammapStr;
             urlencstreammapStr = Regex.Unescape(urlencstreammapStr);
-            string jsassets = json.assets.js;
-            string playerVersion = Regex.Match(jsassets, @"(?<=player-).+?(?=/)").Value;
+            string playerVersion = json.assets.js;
             List<VideoFile> formats = new List<VideoFile>();
-            foreach (string formatStr in adaptiveFormatStr.Split(','))
-                formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
-            foreach (string formatStr in urlencstreammapStr.Split(','))
-                formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
+            if (!string.IsNullOrEmpty(adaptiveFormatStr))
+                foreach (string formatStr in adaptiveFormatStr.Split(','))
+                    formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
+            if (!string.IsNullOrEmpty(urlencstreammapStr))
+                foreach (string formatStr in urlencstreammapStr.Split(','))
+                    formats.Add(VideoFile.FromFormatString(formatStr, playerVersion));
+            formats.Sort();
             return formats;
         }
     }

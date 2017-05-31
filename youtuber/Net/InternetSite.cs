@@ -37,9 +37,25 @@ namespace youtuber.net
 
         protected HttpWebRequest request;
         protected HttpWebResponse response;
+        protected CookieContainer cookieContainer = new CookieContainer();
 
-        protected InternetSite(Uri uri){
-            request = DefaultHttpWebRequest == null ? WebRequest.CreateHttp(uri) : DefaultHttpWebRequest;
+        public CookieCollection Cookies
+        {
+            get => cookieContainer.GetCookies(Uri);
+            private set => cookieContainer.Add(value);
+        }
+
+        protected InternetSite(Uri uri) {
+            if (DefaultHttpWebRequest == null) {
+                request = WebRequest.CreateHttp(uri);
+            } else { request = DefaultHttpWebRequest; }
+        }
+
+        protected InternetSite(Uri uri, CookieCollection cookies) {
+            if (DefaultHttpWebRequest == null) {
+                request = WebRequest.CreateHttp(uri);
+                request.CookieContainer.Add(cookies);
+            } else { request = DefaultHttpWebRequest; }
         }
 
         public bool Success {get; protected set;}
@@ -47,6 +63,7 @@ namespace youtuber.net
         public Uri Uri => request.RequestUri;
 
         protected async Task Load(){
+            request.CookieContainer = cookieContainer;
             response = (HttpWebResponse) await request.GetResponseAsync();
             Stream responseStream = response.GetResponseStream();
             if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
