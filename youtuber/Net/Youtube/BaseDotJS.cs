@@ -12,15 +12,13 @@ namespace youtuber.Net.Youtube
     {
         private static readonly Hashtable Files = new Hashtable(new Dictionary<string, BaseDotJs>());
 
-        public string PlayerVersion {get;}
-
         private BaseDotJs(string playerVersion) : base(
             new Uri($"http://s.ytimg.com{playerVersion}")){
             PlayerVersion = playerVersion;
         }
 
         private BaseDotJs(string playerVersion, CookieCollection cookies) : base(
-            new Uri($"http://s.ytimg.com{playerVersion}"), cookies) {
+            new Uri($"http://s.ytimg.com{playerVersion}"), cookies){
             PlayerVersion = playerVersion;
         }
 
@@ -28,6 +26,8 @@ namespace youtuber.Net.Youtube
             content = fileContent;
             PlayerVersion = playerVersion;
         }
+
+        public string PlayerVersion {get;}
 
         public static async Task<BaseDotJs> GetBaseDotJs(string playerVersion, CookieCollection cookies){
             if (Files.ContainsKey(playerVersion)) return Files[playerVersion] as BaseDotJs;
@@ -37,9 +37,8 @@ namespace youtuber.Net.Youtube
             return file;
         }
 
-        public static async Task<BaseDotJs> GetBaseDotJs(string playerVersion) {
-            if (Files.ContainsKey(playerVersion))
-                return Files[playerVersion] as BaseDotJs;
+        public static async Task<BaseDotJs> GetBaseDotJs(string playerVersion){
+            if (Files.ContainsKey(playerVersion)) return Files[playerVersion] as BaseDotJs;
             BaseDotJs file = new BaseDotJs(playerVersion);
             Files[playerVersion] = file;
             await file.Load();

@@ -97,9 +97,8 @@ namespace youtuber.Net.Youtube
             return decipherer;
         }
 
-        public static async Task<Decipherer> GetDecipherer(string playerVersion) {
-            if (Decipherers.ContainsKey(playerVersion))
-                return (Decipherer)Decipherers[playerVersion];
+        public static async Task<Decipherer> GetDecipherer(string playerVersion){
+            if (Decipherers.ContainsKey(playerVersion)) return (Decipherer) Decipherers[playerVersion];
             BaseDotJs baseDotJs = await BaseDotJs.GetBaseDotJs(playerVersion);
             Decipherer decipherer = new Decipherer(playerVersion, baseDotJs);
             await decipherer.Setup();
@@ -107,7 +106,7 @@ namespace youtuber.Net.Youtube
             return decipherer;
         }
 
-        public static async Task<Decipherer> GetDecipherer(string playerVersion, string fileContent) {
+        public static async Task<Decipherer> GetDecipherer(string playerVersion, string fileContent){
             BaseDotJs baseDotJs = await BaseDotJs.GetBaseDotJs(playerVersion, fileContent);
             Decipherer decipherer = new Decipherer(playerVersion, baseDotJs);
             await decipherer.Setup();

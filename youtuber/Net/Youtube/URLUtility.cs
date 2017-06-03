@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -123,7 +122,7 @@ namespace youtuber.net
         public static Dictionary<string, string> ExtractParameters(string urlQuery){
             Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (string line in urlQuery.Split('&')) {
-                var splitted = line.Split('=');
+                string[] splitted = line.Split('=');
                 string key = WebUtility.UrlDecode(splitted[0]);
                 string value = WebUtility.UrlDecode(WebUtility.UrlDecode(splitted[1]));
                 result.Add(key, value);

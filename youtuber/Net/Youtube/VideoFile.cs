@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
@@ -43,7 +42,7 @@ namespace youtuber.Net.Youtube
             Arguments.Remove(TYPE);
             Url = Arguments[URL];
             Arguments.Remove(URL);
-            S = String.Empty;
+            S = string.Empty;
             if (Arguments.ContainsKey(SIGNATURE)) {
                 S = Arguments[SIGNATURE];
                 Arguments.Remove(SIGNATURE);
@@ -86,7 +85,7 @@ namespace youtuber.Net.Youtube
             } else if (args.ContainsKey(FPS)) { // Dash video
                 if (args.ContainsKey(TARGETDURATIONSEC)) videoFile = new DashVideoLive(args); // Live stream
                 else if (args.ContainsKey(STEREOLAYOUT)) videoFile = new DashVideo3D(args); // 3D
-                else { videoFile = new DashVideo(args); }
+                else videoFile = new DashVideo(args);
             } else { // Dash audio
                 if (args.ContainsKey(TARGETDURATIONSEC)) videoFile = new DashAudioLive(args); // Live stream
                 else videoFile = new DashAudio(args);
@@ -134,19 +133,21 @@ namespace youtuber.Net.Youtube
 
             public VideoQuality Quality {get;}
             public string VideoCodec {get;}
-            public string AudioCodec {get; }
-            public int Width { get; internal set; }
-            public int Height { get; internal set; }
-            public int Arg1 { get; internal set; }
-            public int Arg2 { get; internal set; }
-            public int Arg3 { get; internal set; }
+            public string AudioCodec {get;}
+            public int Width {get; internal set;}
+            public int Height {get; internal set;}
+            public int Arg1 {get; internal set;}
+            public int Arg2 {get; internal set;}
+            public int Arg3 {get; internal set;}
 
             public static string GetCsvHeaders(){
-                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, "Width", "Height", "Arg1", "Arg2", "Arg3", "*Extension", "*MimeType", "*PlayerVersion");
+                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, "Width", "Height", "Arg1", "Arg2", "Arg3",
+                    "*Extension", "*MimeType", "*PlayerVersion");
             }
 
             public override string ToCsvRow(){
-                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Width, Height, Arg1, Arg2, Arg3, Extension, MimeType, PlayerVersion);
+                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Width, Height, Arg1, Arg2, Arg3,
+                    Extension, MimeType, PlayerVersion);
             }
 
             public override string ToString(){
@@ -217,49 +218,49 @@ namespace youtuber.Net.Youtube
             public string VideoCodec {get;}
 
             public static string GetCsvHeaders(){
-                return string.Join(";", 
-                ITAG,
-                TYPE,
-                URL, 
-                SIGNATURE,
-                "*Extension",
-                "*MimeType", 
-                "*PlayerVersion", 
-                BITRATE,
-                PROJECTIONTYPE,
-                INDEX, 
-                INIT, 
-                CLEN,
-                LMT,
-                XTAGS, 
-                FPS, 
-                QUALITYLABEL,
-                SIZE, 
-                "*VideoCodec",
-                "*ArgumentLeftovers");
+                return string.Join(";",
+                    ITAG,
+                    TYPE,
+                    URL,
+                    SIGNATURE,
+                    "*Extension",
+                    "*MimeType",
+                    "*PlayerVersion",
+                    BITRATE,
+                    PROJECTIONTYPE,
+                    INDEX,
+                    INIT,
+                    CLEN,
+                    LMT,
+                    XTAGS,
+                    FPS,
+                    QUALITYLABEL,
+                    SIZE,
+                    "*VideoCodec",
+                    "*ArgumentLeftovers");
             }
 
             public override string ToCsvRow(){
                 return string.Join(";",
-                ITag, 
-                Type.Replace(';', '|'), 
-                Url, 
-                S, 
-                Extension,
-                MimeType,
-                PlayerVersion,
-                Bitrate,
-                ProjectionType,
-                IndexFrom + " - " + IndexTo,
-                InitFrom + " - " + InitTo,
-                ContentLength, 
-                Lmt,
-                string.Join(", ", XTags),
-                Fps,
-                QualityLabel, 
-                Width + " x " + Height,
-                VideoCodec,
-                string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
+                    ITag,
+                    Type.Replace(';', '|'),
+                    Url,
+                    S,
+                    Extension,
+                    MimeType,
+                    PlayerVersion,
+                    Bitrate,
+                    ProjectionType,
+                    IndexFrom + " - " + IndexTo,
+                    InitFrom + " - " + InitTo,
+                    ContentLength,
+                    Lmt,
+                    string.Join(", ", XTags),
+                    Fps,
+                    QualityLabel,
+                    Width + " x " + Height,
+                    VideoCodec,
+                    string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
 
             public override string ToString(){
@@ -267,15 +268,16 @@ namespace youtuber.Net.Youtube
             }
         }
 
-        public class DashVideoLive : DashVideo {
-            public DashVideoLive(Dictionary<string, string> arguments) : base(arguments) {
+        public class DashVideoLive : DashVideo
+        {
+            public DashVideoLive(Dictionary<string, string> arguments) : base(arguments){
                 TargetDurationSec = double.Parse(arguments[TARGETDURATIONSEC]);
                 Arguments.Remove(TARGETDURATIONSEC);
             }
 
-            public double TargetDurationSec { get; }
+            public double TargetDurationSec {get;}
 
-            public new static string GetCsvHeaders() {
+            public new static string GetCsvHeaders(){
                 return string.Join(";",
                     ITAG,
                     TYPE,
@@ -298,40 +300,42 @@ namespace youtuber.Net.Youtube
                     TARGETDURATIONSEC,
                     "*ArgumentLeftovers");
             }
-            public override string ToCsvRow() {
+
+            public override string ToCsvRow(){
                 return string.Join(";",
-                ITag, 
-                Type.Replace(';', '|'), 
-                Url, 
-                S,
-                Extension,
-                MimeType,
-                PlayerVersion,
-                Bitrate, 
-                ProjectionType,
-                IndexFrom + " - " + IndexTo,
-                InitFrom + " - " + InitTo,
-                ContentLength, 
-                Lmt,
-                string.Join(", ", XTags),
-                Fps,
-                QualityLabel,
-                Width + " x " + Height,
-                VideoCodec,
-                TargetDurationSec,
-                string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
+                    ITag,
+                    Type.Replace(';', '|'),
+                    Url,
+                    S,
+                    Extension,
+                    MimeType,
+                    PlayerVersion,
+                    Bitrate,
+                    ProjectionType,
+                    IndexFrom + " - " + IndexTo,
+                    InitFrom + " - " + InitTo,
+                    ContentLength,
+                    Lmt,
+                    string.Join(", ", XTags),
+                    Fps,
+                    QualityLabel,
+                    Width + " x " + Height,
+                    VideoCodec,
+                    TargetDurationSec,
+                    string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
         }
 
-        public class DashVideo3D : DashVideo {
-            public DashVideo3D(Dictionary<string, string> arguments) : base(arguments) {
+        public class DashVideo3D : DashVideo
+        {
+            public DashVideo3D(Dictionary<string, string> arguments) : base(arguments){
                 StereoLayout = int.Parse(arguments[STEREOLAYOUT]);
                 Arguments.Remove(STEREOLAYOUT);
             }
 
-            public int StereoLayout { get; }
+            public int StereoLayout {get;}
 
-            public new static string GetCsvHeaders() {
+            public new static string GetCsvHeaders(){
                 return string.Join(";",
                     ITAG,
                     TYPE,
@@ -354,7 +358,8 @@ namespace youtuber.Net.Youtube
                     STEREOLAYOUT,
                     "*ArgumentLeftovers");
             }
-            public override string ToCsvRow() {
+
+            public override string ToCsvRow(){
                 return string.Join(";",
                     ITag,
                     Type.Replace(';', '|'),
@@ -391,42 +396,42 @@ namespace youtuber.Net.Youtube
 
             public static string GetCsvHeaders(){
                 return string.Join(";",
-                ITAG, 
-                TYPE,
-                URL,
-                SIGNATURE,
-                "*Extension",
-                "*MimeType",
-                "*PlayerVersion",
-                BITRATE, 
-                PROJECTIONTYPE, 
-                INDEX,
-                INIT, 
-                CLEN, 
-                LMT, 
-                XTAGS, 
-                "*AudioCodec",
-                "*ArgumentLeftovers");
+                    ITAG,
+                    TYPE,
+                    URL,
+                    SIGNATURE,
+                    "*Extension",
+                    "*MimeType",
+                    "*PlayerVersion",
+                    BITRATE,
+                    PROJECTIONTYPE,
+                    INDEX,
+                    INIT,
+                    CLEN,
+                    LMT,
+                    XTAGS,
+                    "*AudioCodec",
+                    "*ArgumentLeftovers");
             }
 
             public override string ToCsvRow(){
                 return string.Join(";",
-                ITag,
-                Type.Replace(';', '|'),
-                Url,
-                S, 
-                Extension,
-                MimeType,
-                PlayerVersion,
-                Bitrate, 
-                ProjectionType,
-                IndexFrom + " - " + IndexTo,
-                InitFrom + " - " + InitTo, 
-                ContentLength,
-                Lmt,
-                string.Join(", ", XTags),
-                AudioCodec,
-                string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
+                    ITag,
+                    Type.Replace(';', '|'),
+                    Url,
+                    S,
+                    Extension,
+                    MimeType,
+                    PlayerVersion,
+                    Bitrate,
+                    ProjectionType,
+                    IndexFrom + " - " + IndexTo,
+                    InitFrom + " - " + InitTo,
+                    ContentLength,
+                    Lmt,
+                    string.Join(", ", XTags),
+                    AudioCodec,
+                    string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
 
             public override string ToString(){
@@ -434,15 +439,16 @@ namespace youtuber.Net.Youtube
             }
         }
 
-        public class DashAudioLive : DashAudio {
-            public DashAudioLive(Dictionary<string, string> arguments) : base(arguments) {
+        public class DashAudioLive : DashAudio
+        {
+            public DashAudioLive(Dictionary<string, string> arguments) : base(arguments){
                 TargetDurationSec = double.Parse(arguments[TARGETDURATIONSEC]);
                 Arguments.Remove(TARGETDURATIONSEC);
             }
 
-            public double TargetDurationSec { get; }
+            public double TargetDurationSec {get;}
 
-            public static string GetCsvHeaders() {
+            public static string GetCsvHeaders(){
                 return string.Join(";",
                     ITAG,
                     TYPE,
@@ -463,7 +469,7 @@ namespace youtuber.Net.Youtube
                     "*ArgumentLeftovers");
             }
 
-            public override string ToCsvRow() {
+            public override string ToCsvRow(){
                 return string.Join(";",
                     ITag,
                     Type.Replace(';', '|'),
