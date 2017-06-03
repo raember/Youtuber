@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using youtuber.net;
@@ -86,7 +87,7 @@ namespace youtubertest
 
         [TestMethod]
         public async Task BaW_jenozKc(){
-            Uri uri = new Uri("https://www.youtube.com/watch?v=BaW_jenozKc&t=1s&end=9");
+            Uri uri = new Uri("https://www.youtube.com/watch?v=BaW_jenozKc");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
             Assert.IsTrue(video.Success);
@@ -113,8 +114,9 @@ namespace youtubertest
                 request.Method = "HEAD";
                 request.CookieContainer = new CookieContainer();
                 request.CookieContainer.Add(video.Cookies);
-                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
-                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                using (var response = request.GetResponse() as HttpWebResponse) {
+                    Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                }
             }
         }
 
@@ -176,27 +178,80 @@ namespace youtubertest
                 request.Method = "HEAD";
                 request.CookieContainer = new CookieContainer();
                 request.CookieContainer.Add(video.Cookies);
-                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
-                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                using (var response = request.GetResponse() as HttpWebResponse) {
+                    Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                }
             }
         }
 
         [TestMethod]
         public async Task GatherData(){
-            Video video = await Video.fromID("O4ndIDcDSGc");
+            Video video = await Video.fromID("OpIQNxiKJoE");
             HashSet<string> usedVideoIDs = new HashSet<string>();
             usedVideoIDs.Add(video.VideoID);
-            List<string> availableVideoIdBuffer = new List<string>();
+            List<string> availableVideoIdBuffer = new List<string>{ "b-v-lTtS_os", "FSGfN9rr78Q" };
+
+            List<string> urlKeys = new List<string>{
+                "ei",
+                "expire",
+                "gir",
+                "id",
+                "initcwndbps",
+                "ip",
+                "ipbits",
+                "itag",
+                "keepalive",
+                "key",
+                "mime",
+                "mm",
+                "mn",
+                "ms",
+                "mt",
+                "mv",
+                "pl",
+                "ratebypass",
+                "requiressl",
+                "signature",
+                "source",
+                "sparams",
+                "beids",
+                "clen",
+                "noclen",
+                "cmbypass",
+                "compress",
+                "hang",
+                "live",
+                "lmt",
+                "dur",
+                "gcr",
+                "hightc",
+                "pcm2",
+                "pcm2cms"
+            };
+            string csvHeaderSuffix =
+                $";VideoID;VideoTitle;Uploader;DownloadURL;{string.Join(";", urlKeys)};AdditionalUrlParams\n";
+            File.Delete("./NormalVideo.csv");
             StreamWriter normalVideoStrWriter = new StreamWriter(File.OpenWrite("./NormalVideo.csv"));
+            File.Delete("./DashVideo.csv");
             StreamWriter dashVideoStrWriter = new StreamWriter(File.OpenWrite("./DashVideo.csv"));
+            File.Delete("./DashVideoLive.csv");
             StreamWriter dashVideoLiveStrWriter = new StreamWriter(File.OpenWrite("./DashVideoLive.csv"));
+            File.Delete("./DashVideo3D.csv");
             StreamWriter dashVideo3DStrWriter = new StreamWriter(File.OpenWrite("./DashVideo3D.csv"));
+            File.Delete("./DashAudio.csv");
             StreamWriter dashAudioStrWriter = new StreamWriter(File.OpenWrite("./DashAudio.csv"));
-            normalVideoStrWriter.Write(VideoFile.Normal.GetCsvHeaders() + ";VideoID;ArgCount\n");
-            dashVideoStrWriter.Write(VideoFile.DashVideo.GetCsvHeaders() + ";VideoID;ArgCount\n");
-            dashVideoLiveStrWriter.Write(VideoFile.DashVideoLive.GetCsvHeaders() + ";VideoID;ArgCount\n");
-            dashVideo3DStrWriter.Write(VideoFile.DashVideo3D.GetCsvHeaders() + ";VideoID;ArgCount\n");
-            dashAudioStrWriter.Write(VideoFile.DashAudio.GetCsvHeaders() + ";VideoID;ArgCount\n");
+            File.Delete("./DashAudioLive.csv");
+            StreamWriter dashAudioLiveStrWriter = new StreamWriter(File.OpenWrite("./DashAudioLive.csv"));
+            File.Delete("./URL.csv");
+            StreamWriter urlStrWriter = new StreamWriter(File.OpenWrite("./URL.csv"));
+            normalVideoStrWriter.Write(VideoFile.Normal.GetCsvHeaders() + csvHeaderSuffix);
+            dashVideoStrWriter.Write(VideoFile.DashVideo.GetCsvHeaders() + csvHeaderSuffix);
+            dashVideoLiveStrWriter.Write(VideoFile.DashVideoLive.GetCsvHeaders() + csvHeaderSuffix);
+            dashVideo3DStrWriter.Write(VideoFile.DashVideo3D.GetCsvHeaders() + csvHeaderSuffix);
+            dashAudioStrWriter.Write(VideoFile.DashAudio.GetCsvHeaders() + csvHeaderSuffix);
+            dashAudioLiveStrWriter.Write(VideoFile.DashAudioLive.GetCsvHeaders() + csvHeaderSuffix);
+            urlStrWriter.Write("VideoFileType;VideoID;Url;" + string.Join(";", urlKeys) + ";AdditionalUrlParams\n");
+
             int count = 1;
             while (count < 500) { // 100 is probably more than enough
                 Debug.Print($"Run {count}: {video.VideoID} - \"{video.Title}\"");
@@ -207,42 +262,118 @@ namespace youtubertest
                 List<VideoFile.DashVideo3D> dashVideo3D = videoFiles.OfType<VideoFile.DashVideo3D>().ToList();
                 dashVideo.RemoveAll(dv => dashVideoLive.Contains(dv) || dashVideo3D.Contains(dv));
                 List<VideoFile.DashAudio> dashAudio = videoFiles.OfType<VideoFile.DashAudio>().ToList();
+                List<VideoFile.DashAudioLive> dashAudioLive = videoFiles.OfType<VideoFile.DashAudioLive>().ToList();
+                dashAudio.RemoveAll(dv => dashAudioLive.Contains(dv));
                 foreach (VideoFile.Normal vf in nonDash) {
-                    normalVideoStrWriter.Write(vf.ToCsvRow() + $";{video.VideoID};{vf.Arguments.Count}\n");
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    normalVideoStrWriter.Write(vf.ToCsvRow() +
+                                               $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    normalVideoStrWriter.Flush();
+                    urlStrWriter.Write($"normal;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
                 }
                 foreach (VideoFile.DashVideo vf in dashVideo) {
-                    dashVideoStrWriter.Write(vf.ToCsvRow() + $";{video.VideoID};{vf.Arguments.Count}\n");
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    dashVideoStrWriter.Write(vf.ToCsvRow() +
+                                             $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    dashVideoStrWriter.Flush();
+                    urlStrWriter.Write($"dash video;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
                 }
                 foreach (VideoFile.DashVideoLive vf in dashVideoLive) {
-                    dashVideoLiveStrWriter.Write(vf.ToCsvRow() + $";{video.VideoID};{vf.Arguments.Count}\n");
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    dashVideoLiveStrWriter.Write(vf.ToCsvRow() +
+                                                 $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    dashVideoLiveStrWriter.Flush();
+                    urlStrWriter.Write($"dash video live;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
                 }
                 foreach (VideoFile.DashVideo3D vf in dashVideo3D) {
-                    dashVideo3DStrWriter.Write(vf.ToCsvRow() + $";{video.VideoID};{vf.Arguments.Count}\n");
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    dashVideo3DStrWriter.Write(vf.ToCsvRow() +
+                                               $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    dashVideo3DStrWriter.Flush();
+                    urlStrWriter.Write($"dash video 3d;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
                 }
                 foreach (VideoFile.DashAudio vf in dashAudio) {
-                    dashAudioStrWriter.Write(vf.ToCsvRow() + $";{video.VideoID};{vf.Arguments.Count}\n");
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    dashAudioStrWriter.Write(vf.ToCsvRow() +
+                                             $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    dashAudioStrWriter.Flush();
+                    urlStrWriter.Write($"dash audio;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
+                }
+                foreach (VideoFile.DashAudioLive vf in dashAudioLive) {
+                    string url = (await vf.GetDownloadUri()).AbsoluteUri;
+                    Dictionary<string, string> dictionary =
+                        URLUtility.ExtractParameters(Regex.Match(url, @"(?<=\?).+?$").Value);
+                    string urlParams = DictToCsv(dictionary, urlKeys);
+                    string urlLeftovers = DictToString(dictionary);
+                    dashAudioLiveStrWriter.Write(vf.ToCsvRow() +
+                                             $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                    dashAudioLiveStrWriter.Flush();
+                    urlStrWriter.Write($"dash audio live;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
+                    urlStrWriter.Flush();
                 }
 
                 string newVideoId = String.Empty;
                 try {
-                    var newIds = video.RelatedVideos.ConvertAll(rec => rec.VideoID);
-                    newIds.Reverse(); // So we get out of those pesky same-user-recommodations
+                    List<Recommendation.Video> recommendations = video
+                        .RelatedVideos.Where(rec => !usedVideoIDs.Contains(rec.VideoID)).OfType<Recommendation.Video>().ToList();
+                    recommendations.RemoveAll(v => v.Username.Equals(video.User));
+                    List<string> newIds = recommendations.ConvertAll(rec => rec.VideoID);
                     availableVideoIdBuffer.AddRange(newIds);
                     newVideoId = availableVideoIdBuffer.First(id => !usedVideoIDs.Contains(id));
-                } catch (Exception) {
-                    normalVideoStrWriter.Dispose();
-                    dashVideoStrWriter.Dispose();
-                    dashAudioStrWriter.Dispose();
-                    Object a = null;
-                }
+                } catch (Exception) { break; }
                 video = await Video.fromID(newVideoId);
                 usedVideoIDs.Add(video.VideoID);
                 count++;
             }
+            Debug.Print($"Ran through {count} videos");
             normalVideoStrWriter.Dispose();
             dashVideoStrWriter.Dispose();
             dashAudioStrWriter.Dispose();
-            var b = true;
+        }
+
+        private string DictToCsv(Dictionary<string, string> dictionary, List<string> keys){
+            string result = String.Empty;
+            foreach (string key in keys) {
+                result += ";";
+                if (dictionary.ContainsKey(key)) {
+                    result += dictionary[key];
+                    dictionary.Remove(key);
+                }
+            }
+            return result;
+        }
+
+        private string DictToString(Dictionary<string, string> dictionary){
+            string result = String.Empty;
+            foreach (KeyValuePair<string, string> keyValuePair in dictionary) {
+                result += $"&{keyValuePair.Key}={keyValuePair.Value}"; 
+            }
+            return result;
         }
     }
 }

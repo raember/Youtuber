@@ -33,29 +33,28 @@ namespace youtuber.net
         public static string UserAgent =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0";
 
-        protected string content = string.Empty;
+        internal string content = string.Empty;
+        protected CookieContainer cookieContainer = new CookieContainer();
 
         protected HttpWebRequest request;
         protected HttpWebResponse response;
-        protected CookieContainer cookieContainer = new CookieContainer();
+
+        protected InternetSite(Uri uri){
+            if (DefaultHttpWebRequest == null) request = WebRequest.CreateHttp(uri);
+            else request = DefaultHttpWebRequest;
+        }
+
+        protected InternetSite(Uri uri, CookieCollection cookies){
+            if (DefaultHttpWebRequest == null) {
+                request = WebRequest.CreateHttp(uri);
+                request.CookieContainer.Add(cookies);
+            } else { request = DefaultHttpWebRequest; }
+        }
 
         public CookieCollection Cookies
         {
             get => cookieContainer.GetCookies(Uri);
             private set => cookieContainer.Add(value);
-        }
-
-        protected InternetSite(Uri uri) {
-            if (DefaultHttpWebRequest == null) {
-                request = WebRequest.CreateHttp(uri);
-            } else { request = DefaultHttpWebRequest; }
-        }
-
-        protected InternetSite(Uri uri, CookieCollection cookies) {
-            if (DefaultHttpWebRequest == null) {
-                request = WebRequest.CreateHttp(uri);
-                request.CookieContainer.Add(cookies);
-            } else { request = DefaultHttpWebRequest; }
         }
 
         public bool Success {get; protected set;}
@@ -64,11 +63,12 @@ namespace youtuber.net
 
         protected async Task Load(){
             request.CookieContainer = cookieContainer;
-            response = (HttpWebResponse) await request.GetResponseAsync();
-            Stream responseStream = response.GetResponseStream();
-            if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
-            using (StreamReader strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
-                content = await strmReader.ReadToEndAsync();
+            using (response = (HttpWebResponse) await request.GetResponseAsync()) {
+                Stream responseStream = response.GetResponseStream();
+                if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
+                using (StreamReader strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {
+                    content = await strmReader.ReadToEndAsync();
+                }
             }
             Success = true;
         }

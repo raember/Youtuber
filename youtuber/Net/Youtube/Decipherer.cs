@@ -11,7 +11,7 @@ namespace youtuber.Net.Youtube
 {
     public class Decipherer
     {
-        public static WebClient webClient = new WebClient();
+        internal static WebClient webClient = new WebClient();
 
         public static readonly Func<string, int, string> Swap = (cipher, index) => {
                                                                     StringBuilder sb = new StringBuilder(cipher);
@@ -29,23 +29,23 @@ namespace youtuber.Net.Youtube
 
         private static readonly Hashtable Decipherers = new Hashtable(new Dictionary<string, Decipherer>());
 
-        private readonly string fileContent;
+        private readonly BaseDotJs baseDotJs;
         private readonly Hashtable functionMapping = new Hashtable(new Dictionary<string, Func<string, int, string>>());
 
         private readonly List<Tuple<Func<string, int, string>, int>> operations =
             new List<Tuple<Func<string, int, string>, int>>();
 
-        private Decipherer(string playerVersion, string fileContent){
-            this.fileContent = fileContent;
-            Uri = new Uri($"http://s.ytimg.com/yts/jsbin/player-{playerVersion}/en_US/base.js");
+        private Decipherer(string playerVersion, BaseDotJs baseDotJs){
+            this.baseDotJs = baseDotJs;
+            Uri = new Uri($"http://s.ytimg.com{playerVersion}");
         }
 
         public Uri Uri {get;}
 
         private async Task Setup(){
-            string funcName = Regex.Match(fileContent, @"(?<=""signature"",)[\w\d\$]+?(?=\()").Value;
+            string funcName = Regex.Match(baseDotJs.content, @"(?<=""signature"",)[\w\d\$]+?(?=\()").Value;
             funcName = Regex.Escape(funcName);
-            string funcBody = Regex.Match(fileContent,
+            string funcBody = Regex.Match(baseDotJs.content,
                 @"(?<=;[\s\r\n]*?" + funcName + @"\=function\(\w+\)\{).*?(?=\};)").Value;
             string family = string.Empty;
             string functionPool = string.Empty;
@@ -60,7 +60,7 @@ namespace youtuber.Net.Youtube
                 int index = int.Parse(match.Groups["index"].Value);
                 if (!functionMapping.ContainsKey(function)) {
                     if (!funcPoolParsed) {
-                        functionPool = Regex.Match(fileContent, @"(?<=\W" + family + @"\=\{).*?(?=\};)",
+                        functionPool = Regex.Match(baseDotJs.content, @"(?<=\W" + family + @"\=\{).*?(?=\};)",
                             RegexOptions.Singleline).Value;
                         funcPoolParsed = true;
                     }
@@ -88,18 +88,30 @@ namespace youtuber.Net.Youtube
             return deciphered;
         }
 
-        public static async Task<Decipherer> GetDecipherer(string playerVersion, string fileContent){
+        public static async Task<Decipherer> GetDecipherer(string playerVersion, CookieCollection cookies){
             if (Decipherers.ContainsKey(playerVersion)) return (Decipherer) Decipherers[playerVersion];
-            Decipherer decipherer = new Decipherer(playerVersion, fileContent);
+            BaseDotJs baseDotJs = await BaseDotJs.GetBaseDotJs(playerVersion, cookies);
+            Decipherer decipherer = new Decipherer(playerVersion, baseDotJs);
             await decipherer.Setup();
             Decipherers.Add(playerVersion, decipherer);
             return decipherer;
         }
 
-        public static async Task<Decipherer> GetDecipherer(string playerVersion){
-            return await GetDecipherer(playerVersion,
-                await webClient.DownloadStringTaskAsync(
-                    $"http://s.ytimg.com{playerVersion}"));
+        public static async Task<Decipherer> GetDecipherer(string playerVersion) {
+            if (Decipherers.ContainsKey(playerVersion))
+                return (Decipherer)Decipherers[playerVersion];
+            BaseDotJs baseDotJs = await BaseDotJs.GetBaseDotJs(playerVersion);
+            Decipherer decipherer = new Decipherer(playerVersion, baseDotJs);
+            await decipherer.Setup();
+            Decipherers.Add(playerVersion, decipherer);
+            return decipherer;
+        }
+
+        public static async Task<Decipherer> GetDecipherer(string playerVersion, string fileContent) {
+            BaseDotJs baseDotJs = await BaseDotJs.GetBaseDotJs(playerVersion, fileContent);
+            Decipherer decipherer = new Decipherer(playerVersion, baseDotJs);
+            await decipherer.Setup();
+            return decipherer;
         }
     }
 }

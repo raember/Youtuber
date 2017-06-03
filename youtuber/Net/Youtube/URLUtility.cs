@@ -120,9 +120,9 @@ namespace youtuber.net
             return match.Groups["pl"].Value;
         }
 
-        internal static Dictionary<string, string> ExtractParameters(string data){
+        public static Dictionary<string, string> ExtractParameters(string urlQuery){
             Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (string line in data.Split('&')) {
+            foreach (string line in urlQuery.Split('&')) {
                 var splitted = line.Split('=');
                 string key = WebUtility.UrlDecode(splitted[0]);
                 string value = WebUtility.UrlDecode(WebUtility.UrlDecode(splitted[1]));

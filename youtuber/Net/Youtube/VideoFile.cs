@@ -85,10 +85,10 @@ namespace youtuber.Net.Youtube
                 videoFile = new Normal(args);
             } else if (args.ContainsKey(FPS)) { // Dash video
                 if (args.ContainsKey(TARGETDURATIONSEC)) videoFile = new DashVideoLive(args); // Live stream
-                else if (args.ContainsKey(STEREOLAYOUT)) videoFile = new DashVideo(args); // 3D
+                else if (args.ContainsKey(STEREOLAYOUT)) videoFile = new DashVideo3D(args); // 3D
                 else { videoFile = new DashVideo(args); }
             } else { // Dash audio
-                if (args.ContainsKey(TARGETDURATIONSEC)) videoFile = new DashAudio(args);
+                if (args.ContainsKey(TARGETDURATIONSEC)) videoFile = new DashAudioLive(args); // Live stream
                 else videoFile = new DashAudio(args);
             }
             videoFile.PlayerVersion = playerVersion;
@@ -101,7 +101,7 @@ namespace youtuber.Net.Youtube
                 string signature = (await Decipherer.GetDecipherer(PlayerVersion)).Decipher(S);
                 url += $"&signature={signature}";
             }
-            url += !Regex.IsMatch(url, @"&ratebypass") ? "&ratebypass=yes" : string.Empty;
+            url += !Regex.IsMatch(url, @"ratebypass\=yes") ? "&ratebypass=yes" : string.Empty;
             return new Uri(url);
         }
 
@@ -134,14 +134,19 @@ namespace youtuber.Net.Youtube
 
             public VideoQuality Quality {get;}
             public string VideoCodec {get;}
-            public string AudioCodec {get;}
+            public string AudioCodec {get; }
+            public int Width { get; internal set; }
+            public int Height { get; internal set; }
+            public int Arg1 { get; internal set; }
+            public int Arg2 { get; internal set; }
+            public int Arg3 { get; internal set; }
 
             public static string GetCsvHeaders(){
-                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, "*Extension", "*MimeType", "*PlayerVersion");
+                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, "Width", "Height", "Arg1", "Arg2", "Arg3", "*Extension", "*MimeType", "*PlayerVersion");
             }
 
             public override string ToCsvRow(){
-                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Extension, MimeType, PlayerVersion);
+                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Width, Height, Arg1, Arg2, Arg3, Extension, MimeType, PlayerVersion);
             }
 
             public override string ToString(){
@@ -268,8 +273,9 @@ namespace youtuber.Net.Youtube
                 Arguments.Remove(TARGETDURATIONSEC);
             }
 
+            public double TargetDurationSec { get; }
 
-            public static string GetCsvHeaders() {
+            public new static string GetCsvHeaders() {
                 return string.Join(";",
                     ITAG,
                     TYPE,
@@ -315,7 +321,6 @@ namespace youtuber.Net.Youtube
                 TargetDurationSec,
                 string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
-            public double TargetDurationSec { get; }
         }
 
         public class DashVideo3D : DashVideo {
@@ -324,8 +329,9 @@ namespace youtuber.Net.Youtube
                 Arguments.Remove(STEREOLAYOUT);
             }
 
+            public int StereoLayout { get; }
 
-            public static string GetCsvHeaders() {
+            public new static string GetCsvHeaders() {
                 return string.Join(";",
                     ITAG,
                     TYPE,
@@ -371,7 +377,6 @@ namespace youtuber.Net.Youtube
                     StereoLayout,
                     string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
-            public int StereoLayout { get; }
         }
 
         public class DashAudio : Dash
@@ -426,6 +431,57 @@ namespace youtuber.Net.Youtube
 
             public override string ToString(){
                 return $"{ITag} (dash audio): {Type}, {Bitrate / 1000}kbit/s";
+            }
+        }
+
+        public class DashAudioLive : DashAudio {
+            public DashAudioLive(Dictionary<string, string> arguments) : base(arguments) {
+                TargetDurationSec = double.Parse(arguments[TARGETDURATIONSEC]);
+                Arguments.Remove(TARGETDURATIONSEC);
+            }
+
+            public double TargetDurationSec { get; }
+
+            public static string GetCsvHeaders() {
+                return string.Join(";",
+                    ITAG,
+                    TYPE,
+                    URL,
+                    SIGNATURE,
+                    "*Extension",
+                    "*MimeType",
+                    "*PlayerVersion",
+                    BITRATE,
+                    PROJECTIONTYPE,
+                    INDEX,
+                    INIT,
+                    CLEN,
+                    LMT,
+                    XTAGS,
+                    "*AudioCodec",
+                    TARGETDURATIONSEC,
+                    "*ArgumentLeftovers");
+            }
+
+            public override string ToCsvRow() {
+                return string.Join(";",
+                    ITag,
+                    Type.Replace(';', '|'),
+                    Url,
+                    S,
+                    Extension,
+                    MimeType,
+                    PlayerVersion,
+                    Bitrate,
+                    ProjectionType,
+                    IndexFrom + " - " + IndexTo,
+                    InitFrom + " - " + InitTo,
+                    ContentLength,
+                    Lmt,
+                    string.Join(", ", XTags),
+                    AudioCodec,
+                    TargetDurationSec,
+                    string.Join(", ", Arguments.ToList().ConvertAll(kvp => $"{kvp.Key} = {kvp.Value}")));
             }
         }
     }

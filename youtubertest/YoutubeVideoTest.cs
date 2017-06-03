@@ -107,7 +107,8 @@ namespace youtubertest
             Assert.IsNotNull(videoFiles);
             VideoFile videoFile = videoFiles.First(vf => vf.ITag == 247);
             Assert.IsNotNull(videoFile);
-            Uri link = videoFile.GetDownloadUri().Result;
+            SetMock("./baseTest.js");
+            Uri link = await videoFile.GetDownloadUri();
             Assert.IsNotNull(link);
             Uri referenceUri =
                 new Uri(
