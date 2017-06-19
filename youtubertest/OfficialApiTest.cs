@@ -17,7 +17,7 @@ namespace youtubertest
     [TestClass]
     public class OfficialApiTest
     {
-        private string apiKey = string.Empty;
+        private string apiKey = string.Empty; // Insert API key here.
         private FileStream fileStream;
         private readonly Mock<HttpWebRequest> httpWebRequestMock = new Mock<HttpWebRequest>();
         private readonly Mock<HttpWebResponse> httpWebResponseMock = new Mock<HttpWebResponse>();
@@ -41,6 +41,7 @@ namespace youtubertest
         [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task SearchFunctionality(){
+            await MakeSureApiKeyIsAvailable();
             SetMock("./SearchJson0.json");
             Search search = new Search(apiKey);
             const int RESULTS = 50;
