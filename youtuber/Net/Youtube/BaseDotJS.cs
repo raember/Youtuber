@@ -52,5 +52,9 @@ namespace youtuber.Net.Youtube
         public string ExtractApiKey(){
             return Regex.Match(content, @"(?<=\(b,""key"","")[^""]+?(?=""\);)").Value;
         }
+
+        protected override void SetCookies() {
+            request.Accept = "*/*";
+        }
     }
 }

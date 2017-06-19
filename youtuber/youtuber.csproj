@@ -50,6 +50,8 @@
     <Compile Include="Net\Youtube\BaseDotJs.cs" />
     <Compile Include="Net\Youtube\Decipherer.cs" />
     <Compile Include="Net\Youtube\Image.cs" />
+    <Compile Include="Net\Youtube\Official\ApiBase.cs" />
+    <Compile Include="Net\Youtube\Official\Search.cs" />
     <Compile Include="Net\Youtube\URLUtility.cs" />
     <Compile Include="Net\Youtube\Recommendation.cs" />
     <Compile Include="Net\Youtube\Video.cs" />
@@ -59,6 +61,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

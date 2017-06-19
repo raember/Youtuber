@@ -375,5 +375,22 @@ namespace youtubertest
             }
             return result;
         }
+
+        [TestMethod]
+        public async Task DownloadAvailable(){
+            foreach (string id in new[]{"FffTJk-gFKc", "OEVzPCY2T-g", "tlfAQ33YE1A"}) {
+                Video video = await Video.fromID(id);
+                foreach (VideoFile downloadable in video.ExtractFiles()) {
+                    Uri link = await downloadable.GetDownloadUri();
+                    HttpWebRequest request = WebRequest.CreateHttp(link);
+                    request.Method = "HEAD";
+                    request.CookieContainer = new CookieContainer();
+                    request.CookieContainer.Add(video.Cookies);
+                    using (var response = request.GetResponse() as HttpWebResponse) {
+                        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                    }
+                }
+            }
+        }
     }
 }

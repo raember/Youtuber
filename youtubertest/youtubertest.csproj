@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="DeciphererTest.cs" />
     <Compile Include="IntegrationTests.cs" />
+    <Compile Include="OfficialApiTest.cs" />
     <Compile Include="YoutubeVideoTest.cs" />
     <Compile Include="URLUtilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

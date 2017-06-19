@@ -26,7 +26,7 @@ namespace youtuber.net
     /// <summary>
     ///     Contains the most basic methods for interacting with an internet site.
     /// </summary>
-    public class InternetSite
+    public abstract class InternetSite
     {
         public static HttpWebRequest DefaultHttpWebRequest = null;
 
@@ -34,35 +34,36 @@ namespace youtuber.net
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0";
 
         internal string content = string.Empty;
-        protected CookieContainer cookieContainer = new CookieContainer();
 
         protected HttpWebRequest request;
         protected HttpWebResponse response;
 
         protected InternetSite(Uri uri){
-            if (DefaultHttpWebRequest == null) request = WebRequest.CreateHttp(uri);
-            else request = DefaultHttpWebRequest;
+            Uri = uri;
+            Cookies = new CookieCollection();
         }
 
-        protected InternetSite(Uri uri, CookieCollection cookies){
-            if (DefaultHttpWebRequest == null) {
-                request = WebRequest.CreateHttp(uri);
-                request.CookieContainer.Add(cookies);
-            } else { request = DefaultHttpWebRequest; }
+        protected InternetSite(Uri uri, CookieCollection cookies) {
+            Uri = uri;
+            Cookies = cookies;
         }
 
-        public CookieCollection Cookies
-        {
-            get => cookieContainer.GetCookies(Uri);
-            private set => cookieContainer.Add(value);
-        }
+        public CookieCollection Cookies{get;}
+
+        protected abstract void SetCookies();
 
         public bool Success {get; protected set;}
 
-        public Uri Uri => request.RequestUri;
+        public Uri Uri { get; protected set; }
 
-        protected async Task Load(){
-            request.CookieContainer = cookieContainer;
+        protected async Task Load() {
+            if (DefaultHttpWebRequest == null) {
+                request = WebRequest.CreateHttp(Uri);
+                request.UserAgent = UserAgent;
+                SetCookies();
+                request.CookieContainer = new CookieContainer();
+                request.CookieContainer.Add(Cookies);
+            } else { request = DefaultHttpWebRequest; }
             using (response = (HttpWebResponse) await request.GetResponseAsync()) {
                 Stream responseStream = response.GetResponseStream();
                 if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");

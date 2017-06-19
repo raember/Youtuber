@@ -12,9 +12,10 @@ namespace youtuber.net
 {
     public class Video : InternetSite
     {
-        private dynamic json;
         private Video(Uri uri) : base(uri){ }
         private Video(Uri uri, CookieCollection cookies) : base(uri, cookies){ }
+
+        private dynamic json;
 
         public string Title
         {
@@ -81,7 +82,7 @@ namespace youtuber.net
         {
             get
             {
-                Match match = Regex.Match(content, @"(?<=www\.youtube\.com/user/)[^/""]+?(?="")");
+                Match match = Regex.Match(content, @"(?<=/channel/)[^/""]+?(?="")");
                 if (!match.Success) return string.Empty;
                 return Regex.Unescape(match.Value);
             }
@@ -122,7 +123,7 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=like-button-renderer-like-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
-                if (!match.Success) return 0;
+                if (!match.Success) return -1;
                 string str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
@@ -134,7 +135,7 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=like-button-renderer-dislike-button-unclicked[^<>]+?\>\<span class\=""yt-uix-button-content""\>)[0-9,]*?(?=\</span\>)");
-                if (!match.Success) return 0;
+                if (!match.Success) return -1;
                 string str = match.Value.Replace(",", "");
                 return long.Parse(str);
             }
@@ -146,11 +147,21 @@ namespace youtuber.net
             {
                 Match match = Regex.Match(content,
                     @"(?<=class\=""[^<>]*?yt-subscriber-count[^<>]*?title\="")[^""]*?(?="")");
-                if (!match.Success) return 0;
-                string str = match.Value.Replace("K", "000").Replace("M", "000000");
-                return long.Parse(str);
+                if (!match.Success) return -1;
+                double value = double.Parse(Regex.Match(match.Value, @"\d+?(\.\d+?|)(?=\w)").Value);
+                switch (match.Value.Last()) {
+                    case 'K':
+                        value *= 1000;
+                        break;
+                    case 'M':
+                        value *= 1000000;
+                        break;
+                }
+                return (long) value;
             }
         }
+
+        public string PlayerVersion => (string) json.assets.js;
 
         public List<Recommendation> RelatedVideos
         {
@@ -179,21 +190,6 @@ namespace youtuber.net
         }
 
         private async Task<Video> LoadSite(){
-            if (DefaultHttpWebRequest == null) {
-                WebHeaderCollection headers = request.Headers;
-                //headers.Add("User-Agent", UserAgent);
-                request.UserAgent = UserAgent;
-                //headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                request.Accept = "text/html";
-                //headers.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.5");
-                //headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
-                //headers.Add("DNT", "1");
-                //headers.Add("Upgrade-Insecure-Requests", "1");
-                //headers.Add("Connection", "keep-alive");
-                request.KeepAlive = true;
-                //headers.Add("Pragma", "no-cache");
-                //headers.Add("Cache-Control", "no-cache");
-            }
             await Load();
             Success &= !Regex.Match(content, @"id\=""player""[^""]*?class=""[^""]*?off-screen-trigger[^""]*?""")
                              .Success;
@@ -206,33 +202,32 @@ namespace youtuber.net
             try {
                 dynamic args = json.args;
 
-                string adaptiveFormatStr = args == null ? string.Empty : args.adaptive_fmts;
-                adaptiveFormatStr = string.IsNullOrEmpty(adaptiveFormatStr) ? string.Empty : adaptiveFormatStr;
+                string adaptiveFormatStr = args == null ? String.Empty : args.adaptive_fmts;
+                adaptiveFormatStr = string.IsNullOrEmpty(adaptiveFormatStr) ? String.Empty : adaptiveFormatStr;
                 adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
                 string urlencstreammapStr = args.url_encoded_fmt_stream_map;
-                urlencstreammapStr = string.IsNullOrEmpty(urlencstreammapStr) ? string.Empty : urlencstreammapStr;
+                urlencstreammapStr = string.IsNullOrEmpty(urlencstreammapStr) ? String.Empty : urlencstreammapStr;
                 urlencstreammapStr = Regex.Unescape(urlencstreammapStr);
-                dynamic assets = json.assets;
-                string playerVersion = assets.js;
                 string nonDashFormatDetails = args.fmt_list;
                 List<string> formatDetailsStr = Regex.Unescape(nonDashFormatDetails).Split(',').ToList();
                 List<Match> formatDetails =
                     formatDetailsStr.ConvertAll(s => Regex.Match(s,
                                                     @"^(?<itag>\d+?)/(?<width>\d+?)x(?<height>\d+?)/(?<arg1>\d+?)/(?<arg2>\d+?)/(?<arg3>\d+?)$"));
                 List<VideoFile> formats = new List<VideoFile>();
-                if (!string.IsNullOrEmpty(adaptiveFormatStr))
+                if (!string.IsNullOrEmpty(adaptiveFormatStr)) {
                     foreach (string formatStr in adaptiveFormatStr.Split(',')) {
-                        VideoFile vf = VideoFile.FromFormatString(formatStr, playerVersion);
+                        VideoFile vf = VideoFile.FromFormatString(formatStr, PlayerVersion);
                         formats.Add(vf);
                     }
-                if (!string.IsNullOrEmpty(urlencstreammapStr))
+                }
+                if (!string.IsNullOrEmpty(urlencstreammapStr)) {
                     foreach (string formatStr in urlencstreammapStr.Split(',')) {
-                        VideoFile vf = VideoFile.FromFormatString(formatStr, playerVersion);
+                        VideoFile vf = VideoFile.FromFormatString(formatStr, PlayerVersion);
                         formats.Add(vf);
                         Match match =
                             formatDetails.FirstOrDefault(fd => int.Parse(fd.Groups["itag"].Value).Equals(vf.ITag));
                         if (match != null) {
-                            VideoFile.Normal vfn = vf as VideoFile.Normal;
+                            var vfn = vf as VideoFile.Normal;
                             vfn.Width = int.Parse(match.Groups["width"].Value);
                             vfn.Height = int.Parse(match.Groups["height"].Value);
                             vfn.Arg1 = int.Parse(match.Groups["arg1"].Value);
@@ -240,12 +235,21 @@ namespace youtuber.net
                             vfn.Arg3 = int.Parse(match.Groups["arg3"].Value);
                         }
                     }
+                }
                 formats.Sort();
                 return formats;
             } catch (Exception e) {
                 Console.WriteLine(e);
                 return null;
             }
+        }
+
+        public override string ToString(){
+            return Success ? $"{VideoID}: {Title}" : $"Error parsing {VideoID}";
+        }
+
+        protected override void SetCookies(){
+            request.Accept = "text/html";
         }
     }
 }
