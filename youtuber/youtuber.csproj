@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Media\FFmpeg\ProcessExe.cs" />
     <Compile Include="Net\InternetSite.cs" />
     <Compile Include="Net\Youtube\BaseDotJs.cs" />
     <Compile Include="Net\Youtube\Decipherer.cs" />
