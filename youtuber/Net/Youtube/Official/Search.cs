@@ -109,7 +109,7 @@ namespace youtuber.Net.Youtube.Official
             }
 
             internal static Result FromJson(dynamic json){
-                switch ((string) (json.id.kind.ToString())) {
+                switch (json.id.kind.ToString()) {
                     case "youtube#video":
                         return Video.FromJson(json);
                     case "youtube#playlist":

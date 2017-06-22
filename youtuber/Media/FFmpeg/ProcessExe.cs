@@ -54,9 +54,7 @@ namespace youtuber.Media.FFmpeg
 
             newProcess.process.WaitForExit();  // for test purpose
 
-            listProcess.Add(newProcess);  // TODO:need to be sure newProcess will be copied and not referenced
-            Debug.WriteLine("process added.");
-            Debug.WriteLine(System.IO.File.Exists(strAudioFilename));
+            listProcess.Add(newProcess);  // TODO:need to be sure newProcess will be copied and not referenced -- cant find articles explicitly stated about it, but probably ok...
             Debug.WriteLine(newProcess.process.ExitCode);
         }
 

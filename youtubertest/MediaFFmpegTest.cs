@@ -15,7 +15,7 @@ namespace youtubertest
 
             clsProcExe.StartProcess("JustinSeven-MusicTheBest3.MP4", "test2.mp3");
 
-            Assert.IsTrue(File.Exists("test2.mp3"));  // i cant find the file but not failed. very weird... 
+            Assert.IsTrue(File.Exists("test2.mp3")); 
         }
     }
 }
