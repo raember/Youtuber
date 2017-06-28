@@ -141,12 +141,12 @@ namespace youtuber.Net.Youtube
             public int Arg3 {get; internal set;}
 
             public static string GetCsvHeaders(){
-                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, "Width", "Height", "Arg1", "Arg2", "Arg3",
+                return string.Join(";", ITAG, TYPE, URL, SIGNATURE, QUALITY, "Width", "Height", "Arg1", "Arg2", "Arg3",
                     "*Extension", "*MimeType", "*PlayerVersion");
             }
 
             public override string ToCsvRow(){
-                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Width, Height, Arg1, Arg2, Arg3,
+                return string.Join(";", ITag, Type.Replace(';', '|'), Url, S, Quality, Width, Height, Arg1, Arg2, Arg3,
                     Extension, MimeType, PlayerVersion);
             }
 
