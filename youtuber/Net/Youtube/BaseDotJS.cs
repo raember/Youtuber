@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using youtuber.net;
+using youtuber.Net;
 
 namespace youtuber.Net.Youtube
 {
