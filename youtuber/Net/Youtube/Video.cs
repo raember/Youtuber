@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using youtuber.Net.Youtube;
 
-namespace youtuber.net
-{
+namespace youtuber.Net {
     public class Video : InternetSite
     {
         private Video(Uri uri) : base(uri){ }

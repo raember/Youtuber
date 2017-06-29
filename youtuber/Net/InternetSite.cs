@@ -21,7 +21,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace youtuber.net
+namespace youtuber.Net
 {
     /// <summary>
     ///     Contains the most basic methods for interacting with an internet site.

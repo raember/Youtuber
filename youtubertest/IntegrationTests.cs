@@ -8,7 +8,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using youtuber.net;
+using youtuber.Net;
 using youtuber.Net.Youtube;
 
 namespace youtubertest
