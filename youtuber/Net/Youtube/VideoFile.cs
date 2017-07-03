@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using youtuber.net;
+using youtuber.Net;
 
 namespace youtuber.Net.Youtube
 {

@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:youtuberExample"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
-        Title="MainWindow" Height="350" Width="680">
+        Title="MainWindow" Height="595.242" Width="737.657">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="InputRow" Height="21"/>
             <RowDefinition Name="DisplayRow"/>
-            <RowDefinition Name="InteractionRow" Height="50"/>
+            <RowDefinition Name="InteractionRow" Height="30"/>
+            <RowDefinition Name="ProgressRow" Height="20"/>
         </Grid.RowDefinitions>
 
         <Grid Name="Top">
@@ -22,32 +22,39 @@
             </Grid.ColumnDefinitions>
 
             <TextBox Name="InputTB"></TextBox>
-            <Button Name="ExecuteBtn" Grid.Column="1" Click="ExecuteBtn_OnClick">Go</Button>
+            <Button Name="ExecuteBtn" Grid.Column="1" Click="ExecuteBtn_OnClick" Content="Go"/>
         </Grid>
         <TabControl x:Name="DisplayTabCtl" Grid.Row="1">
-            <TabItem Header="Video">
+            <TabItem Name="VideoTab" Header="Video">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Name="ImagePreviewCol" Width="260"/>
                         <ColumnDefinition Name="FileChoiceCol"/>
                     </Grid.ColumnDefinitions>
                     <Image x:Name="ImagePreview"/>
-                    <Grid Grid.Column="1" Margin="-2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Name="NormalVideoRow"/>
-                            <RowDefinition Name="DashVideoRow"/>
-                            <RowDefinition Name="DashAudioRow"/>
-                        </Grid.RowDefinitions>
-                        <ListBox x:Name="NormalVideoLB" Grid.Row="0" Margin="-1"/>
-                        <ListBox x:Name="DashVideoLB" Grid.Row="1" Margin="-1"/>
-                        <ListBox x:Name="DashAudioLB" Grid.Row="2" Margin="-1"/>
-                    </Grid>
+                    <ListBox x:Name="FormatLB" Grid.Column="1" Margin="-3"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Search">
-                <Grid/>
+            <TabItem Name="SearchTab" Header="Search">
+                <ListView x:Name="SearchListView" MouseDoubleClick="SearchListView_OnMouseDoubleClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" Width="650"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </TabItem>
         </TabControl>
-
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="LocationTB"/>
+            <Button x:Name="LocationBtn" Content="..." Grid.Column="1" Click="LocationBtn_OnClick"/>
+            <Button x:Name="DownloadBtn" Content="Download" Grid.Column="2" Click="DownloadBtn_OnClick"/>
+        </Grid>
+        <ProgressBar Name="ProgBar" Grid.Row="3"/>
     </Grid>
 </Window>
