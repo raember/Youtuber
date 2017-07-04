@@ -32,7 +32,7 @@
                         <ColumnDefinition Name="FileChoiceCol"/>
                     </Grid.ColumnDefinitions>
                     <Image x:Name="ImagePreview"/>
-                    <ListBox x:Name="FormatLB" Grid.Column="1" Margin="-3"/>
+                    <ListBox x:Name="FormatLB" Grid.Column="1" Margin="-3" SelectionChanged="FormatLB_OnSelectionChanged"/>
                 </Grid>
             </TabItem>
             <TabItem Name="SearchTab" Header="Search">
@@ -51,9 +51,9 @@
                 <ColumnDefinition Width="35"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="LocationTB"/>
+            <TextBox x:Name="LocationTB" TextChanged="LocationTB_OnTextChanged"/>
             <Button x:Name="LocationBtn" Content="..." Grid.Column="1" Click="LocationBtn_OnClick"/>
-            <Button x:Name="DownloadBtn" Content="Download" Grid.Column="2" Click="DownloadBtn_OnClick"/>
+            <Button x:Name="DownloadBtn" Content="Download" Grid.Column="2" Click="DownloadBtn_OnClick" IsEnabled="False"/>
         </Grid>
         <ProgressBar Name="ProgBar" Grid.Row="3"/>
     </Grid>

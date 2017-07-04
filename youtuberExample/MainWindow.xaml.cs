@@ -105,5 +105,20 @@ namespace youtuberExample
             filename = Path.GetFileName(sfd.FileName);
             LocationTB.Text = Path.Combine(downloadDir.FullName, filename);
         }
+
+        private void FormatLB_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            DownloadBtn.IsEnabled = true;
+            downloadDir = new DirectoryInfo(Path.GetDirectoryName(LocationTB.Text));
+            filename = Path.GetFileNameWithoutExtension(LocationTB.Text);
+            int index = FormatLB.SelectedIndex;
+            VideoFile videoFile = downloadFiles[index];
+            filename += videoFile.Extension;
+            LocationTB.Text = Path.Combine(downloadDir.FullName, filename);
+        }
+
+        private void LocationTB_OnTextChanged(object sender, TextChangedEventArgs e) {
+            downloadDir = new DirectoryInfo(Path.GetDirectoryName(LocationTB.Text));
+            filename = Path.GetFileNameWithoutExtension(LocationTB.Text);
+        }
     }
 }
