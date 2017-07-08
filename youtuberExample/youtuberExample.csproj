@@ -94,9 +94,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\youtuber\youtuber.csproj">
+    <ProjectReference Include="..\youtuber\Youtuber.csproj">
       <Project>{32c40798-8ddb-486a-93bb-2c0a6e82ccf6}</Project>
-      <Name>youtuber</Name>
+      <Name>Youtuber</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

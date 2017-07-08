@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.ComponentModel;
        
        
-namespace youtuber.Media.FFmpeg
+namespace Youtuber.Media.FFmpeg
 {
     public sealed class ProcessExe
     {

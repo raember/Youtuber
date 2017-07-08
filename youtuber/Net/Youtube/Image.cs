@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace youtuber.Net.Youtube
+namespace Youtuber.Net.Youtube
 {
     public static class Image
     {

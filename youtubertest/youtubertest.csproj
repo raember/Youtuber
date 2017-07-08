@@ -56,18 +56,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="DeciphererTest.cs" />
-    <Compile Include="IntegrationTests.cs" />
-    <Compile Include="MediaFFmpegTest.cs" />
-    <Compile Include="OfficialApiTest.cs" />
-    <Compile Include="YoutubeVideoTest.cs" />
-    <Compile Include="URLUtilityTest.cs" />
+    <Compile Include="Offline\DeciphererTest.cs" />
+    <Compile Include="Online\IntegrationTests.cs" />
+    <Compile Include="Offline\MediaFFmpegTest.cs" />
+    <Compile Include="Offline\OfficialApiTest.cs" />
+    <Compile Include="Online\YoutubeDl_Tests.cs" />
+    <Compile Include="Offline\YoutubeVideoTest.cs" />
+    <Compile Include="Offline\URLUtilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\youtuber\youtuber.csproj">
+    <ProjectReference Include="..\youtuber\Youtuber.csproj">
       <Project>{32C40798-8DDB-486A-93BB-2C0A6E82CCF6}</Project>
-      <Name>youtuber</Name>
+      <Name>Youtuber</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

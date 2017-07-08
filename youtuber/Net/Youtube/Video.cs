@@ -6,9 +6,9 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using youtuber.Net.Youtube;
+using Youtuber.Net.Youtube;
 
-namespace youtuber.Net {
+namespace Youtuber.Net.Youtube {
     public class Video : InternetSite
     {
         private Video(Uri uri) : base(uri){ }
@@ -77,12 +77,20 @@ namespace youtuber.Net {
             }
         }
 
-        public string UserID
-        {
-            get
-            {
-                Match match = Regex.Match(content, @"(?<=/channel/)[^/""]+?(?="")");
-                if (!match.Success) return string.Empty;
+        public string UserID {
+            get {
+                Match match = Regex.Match(content, @"(?<=\<a href\=""/user/)[^/""]+?(?="")", RegexOptions.Singleline);
+                if (!match.Success)
+                    return string.Empty;
+                return Regex.Unescape(match.Value);
+            }
+        }
+
+        public string ChannelID {
+            get {
+                Match match = Regex.Match(content, @"(?<=yt-user-info""\>\s*?\<a href\=""/channel/)[^/""]+?(?="")", RegexOptions.Singleline);
+                if (!match.Success)
+                    return string.Empty;
                 return Regex.Unescape(match.Value);
             }
         }
@@ -147,7 +155,7 @@ namespace youtuber.Net {
                 Match match = Regex.Match(content,
                     @"(?<=class\=""[^<>]*?yt-subscriber-count[^<>]*?title\="")[^""]*?(?="")");
                 if (!match.Success) return -1;
-                double value = double.Parse(Regex.Match(match.Value, @"\d+?(\.\d+?|)(?=\w)").Value);
+                double value = double.Parse(Regex.Match(match.Value, @"^\d+?(\.\d+?|)(?=\D$)").Value);
                 switch (match.Value.Last()) {
                     case 'K':
                         value *= 1000;
@@ -192,7 +200,7 @@ namespace youtuber.Net {
             await Load();
             Success &= !Regex.Match(content, @"id\=""player""[^""]*?class=""[^""]*?off-screen-trigger[^""]*?""")
                              .Success;
-            string jsonString = Regex.Match(content, @"(?<=ytplayer\.config\s\=\s){.*?}(?=;)").Value;
+            string jsonString = Regex.Match(content, @"(?<=ytplayer\.config\s\=\s){.*?}(?=;ytplayer\.load)").Value;
             json = JsonConvert.DeserializeObject(jsonString);
             return this;
         }

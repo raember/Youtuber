@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace youtuber.Net {
+namespace Youtuber.Net {
     /// <summary>
     ///     Utility class revolving Youtube uris.
     /// </summary>

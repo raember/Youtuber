@@ -8,10 +8,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using youtuber.Net;
-using youtuber.Net.Youtube;
-using youtuber.Net.Youtube.Official;
-using Image = youtuber.Net.Youtube.Image;
+using Youtuber.Net;
+using Youtuber.Net.Youtube;
+using Youtuber.Net.Youtube.Official;
+using Image = Youtuber.Net.Youtube.Image;
 
 namespace youtuberExample
 {

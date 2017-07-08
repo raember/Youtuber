@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using youtuber.Net;
+using Youtuber.Net;
 
-namespace youtuber.Net.Youtube
+namespace Youtuber.Net.Youtube
 {
     public abstract class VideoFile : IComparable
     {

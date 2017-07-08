@@ -6,8 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using youtuber.Net;
-using youtuber.Net.Youtube;
+using Youtuber.Net;
+using Youtuber.Net.Youtube;
 
 namespace youtubertest
 {

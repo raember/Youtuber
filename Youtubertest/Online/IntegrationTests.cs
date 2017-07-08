@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,14 +9,25 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using youtuber.Net;
-using youtuber.Net.Youtube;
+using Youtuber.Net;
+using Youtuber.Net.Youtube;
 
 namespace youtubertest
 {
     [TestClass]
-    public class IntegrationTests
-    {
+    public class IntegrationTests {
+
+        public static async Task<bool> RemoteFilePresent(VideoFile videoFile, CookieCollection cookies) {
+            Uri link = await videoFile.GetDownloadUri();
+            HttpWebRequest request = WebRequest.CreateHttp(link);
+            request.Method = "HEAD";
+            request.CookieContainer = new CookieContainer();
+            request.CookieContainer.Add(cookies);
+            using (var response = request.GetResponse() as HttpWebResponse) {
+                return HttpStatusCode.OK.Equals(response.StatusCode);
+            }
+        }
+
         [DeploymentItem("../../TestData")]
         [TestMethod]
         public async Task WikiExample(){
@@ -82,105 +94,6 @@ namespace youtubertest
                 // Download (Don't do it like this. Do it properly, please)
                 byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
                 File.WriteAllBytes("./image.jpg", data);
-            }
-        }
-
-        [TestMethod]
-        public async Task BaW_jenozKc(){
-            Uri uri = new Uri("https://www.youtube.com/watch?v=BaW_jenozKc");
-            string videoId = URLUtility.ExtractVideoID(uri);
-            Video video = await Video.fromID(videoId);
-            Assert.IsTrue(video.Success);
-            Assert.AreEqual(new DateTime(2012, 10, 2), video.UploadedDateTime);
-            Assert.AreEqual("youtube-dl test video \"'/\\ä↭𝕐", video.Title);
-            Assert.AreEqual("Philipp Hagemeister", video.User);
-            Assert.AreEqual("phihag", video.UserID);
-            Assert.AreEqual("test chars:  \"'/\\ä↭𝕐\n" +
-                            "test URL: https://github.com/rg3/youtube-dl/issues/1892\n" +
-                            "\n" +
-                            "This is a test video for youtube-dl.\n" +
-                            "\n" +
-                            "For more information, contact phihag@phihag.de .",
-                video.Description);
-            Assert.AreEqual(1, video.Keywords.Count);
-            Assert.AreEqual(TimeSpan.FromSeconds(10), video.Duration);
-            Assert.AreNotEqual(-1, video.Likes);
-            Assert.AreNotEqual(-1, video.Dislikes);
-            List<VideoFile> downloadables = video.ExtractFiles();
-            Assert.AreEqual(22, downloadables.Count);
-            foreach (VideoFile downloadable in downloadables) {
-                Uri link = await downloadable.GetDownloadUri();
-                HttpWebRequest request = WebRequest.CreateHttp(link);
-                request.Method = "HEAD";
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.Add(video.Cookies);
-                using (var response = request.GetResponse() as HttpWebResponse) {
-                    Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-                }
-            }
-        }
-
-        [TestMethod]
-        public async Task UxxajLWwzqY(){
-            Uri uri = new Uri("https://www.youtube.com/watch?v=UxxajLWwzqY");
-            string videoId = URLUtility.ExtractVideoID(uri);
-            Video video = await Video.fromID(videoId);
-            Assert.IsTrue(video.Success);
-            Assert.AreEqual(new DateTime(2012, 5, 6), video.UploadedDateTime);
-            Assert.AreEqual("Icona Pop - I Love It (feat. Charli XCX) [OFFICIAL VIDEO]", video.Title);
-            Assert.AreEqual(18, video.Keywords.Count);
-            Assert.AreEqual(new TimeSpan(0, 3, 0), video.Duration);
-            Assert.AreEqual("Icona Pop", video.User);
-            Assert.AreEqual("IconaPop", video.UserID);
-            Assert.AreEqual("I Love It (feat. Charli XCX) \n" +
-                            "\n" +
-                            "STREAM 'This Is... Icona Pop': http://smarturl.it/ThisIs_Streaming\n" +
-                            "\n" +
-                            "DOWNLOAD 'This Is... Icona Pop'\n" +
-                            " http://smarturl.it/ThisIs\n" +
-                            "\n" +
-                            "FOLLOW:\n" +
-                            "http://iconapop.com\n" +
-                            "http://facebook.com/iconapop \n" +
-                            "https://instagram.com/iconapop\n" +
-                            "http://twitter.com/iconapop\n" +
-                            "http://soundcloud.com/iconapop",
-                video.Description);
-            Assert.AreNotEqual(-1, video.Likes);
-            Assert.AreNotEqual(-1, video.Dislikes);
-            List<VideoFile> downloadables = video.ExtractFiles();
-            List<VideoFile.Normal> nonDash = downloadables.OfType<VideoFile.Normal>().ToList();
-            string nonDashStr = string.Empty;
-            List<string> nonDashStrings = new List<string>();
-            foreach (VideoFile.Normal vf in nonDash) { nonDashStrings.Add(string.Join("\t", vf.Arguments.Values)); }
-            nonDashStr = string.Join("\n", nonDashStrings);
-            List<VideoFile.DashAudio> dashAudio = downloadables.OfType<VideoFile.DashAudio>().ToList();
-            string dashAudioStr = string.Empty;
-            List<string> dashAudioStrings = new List<string>();
-            foreach (VideoFile.DashAudio vf in dashAudio) {
-                dashAudioStrings.Add(string.Join("\t", vf.Arguments.Values));
-            }
-            dashAudioStr = string.Join("\n", dashAudioStrings);
-            List<VideoFile.DashVideo> dashVideo = downloadables.OfType<VideoFile.DashVideo>().ToList();
-            string dashVideoStr = string.Empty;
-            List<string> dashVideoStrings = new List<string>();
-            foreach (VideoFile.DashVideo vf in dashVideo) {
-                dashVideoStrings.Add(string.Join("\t", vf.Arguments.Values));
-            }
-            dashVideoStr = string.Join("\n", dashVideoStrings);
-
-            ContentType a = new ContentType("video/webm");
-
-            Assert.AreEqual(20, downloadables.Count);
-            foreach (VideoFile downloadable in downloadables) {
-                Uri link = await downloadable.GetDownloadUri();
-                HttpWebRequest request = WebRequest.CreateHttp(link);
-                request.Method = "HEAD";
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.Add(video.Cookies);
-                using (var response = request.GetResponse() as HttpWebResponse) {
-                    Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-                }
             }
         }
 
@@ -381,14 +294,7 @@ namespace youtubertest
             foreach (string id in new[]{"FffTJk-gFKc", "OEVzPCY2T-g", "tlfAQ33YE1A"}) {
                 Video video = await Video.fromID(id);
                 foreach (VideoFile downloadable in video.ExtractFiles()) {
-                    Uri link = await downloadable.GetDownloadUri();
-                    HttpWebRequest request = WebRequest.CreateHttp(link);
-                    request.Method = "HEAD";
-                    request.CookieContainer = new CookieContainer();
-                    request.CookieContainer.Add(video.Cookies);
-                    using (var response = request.GetResponse() as HttpWebResponse) {
-                        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-                    }
+                    Assert.IsTrue(await RemoteFilePresent(downloadable, video.Cookies));
                 }
             }
         }

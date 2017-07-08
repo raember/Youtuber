@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace youtuber.Net.Youtube
+namespace Youtuber.Net.Youtube
 {
     public class Decipherer
     {

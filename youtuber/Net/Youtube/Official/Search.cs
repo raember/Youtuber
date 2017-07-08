@@ -11,7 +11,7 @@ using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace youtuber.Net.Youtube.Official
+namespace Youtuber.Net.Youtube.Official
 {
     public sealed class Search : ApiBase
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{32C40798-8DDB-486A-93BB-2C0A6E82CCF6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>youtuber</RootNamespace>
-    <AssemblyName>youtuber</AssemblyName>
+    <RootNamespace>Youtuber</RootNamespace>
+    <AssemblyName>Youtuber</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

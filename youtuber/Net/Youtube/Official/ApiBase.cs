@@ -6,9 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using youtuber.Net;
+using Youtuber.Net;
 
-namespace youtuber.Net.Youtube.Official
+namespace Youtuber.Net.Youtube.Official
 {
     public abstract class ApiBase : InternetSite
     {

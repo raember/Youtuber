@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace youtuber.Net {
+namespace Youtuber.Net {
     public class Recommendation
     {
         protected Recommendation(string title, string videoId){

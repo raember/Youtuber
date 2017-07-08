@@ -8,9 +8,9 @@ using Castle.DynamicProxy.Generators.Emitters;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using youtuber.Net;
-using youtuber.Net.Youtube;
-using youtuber.Net.Youtube.Official;
+using Youtuber.Net;
+using Youtuber.Net.Youtube;
+using Youtuber.Net.Youtube.Official;
 
 namespace youtubertest
 {

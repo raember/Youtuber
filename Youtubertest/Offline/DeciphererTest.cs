@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using youtuber.Net.Youtube;
+using Youtuber.Net.Youtube;
 
 namespace youtubertest
 {

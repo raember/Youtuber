@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using youtuber.Media.FFmpeg;
+using Youtuber.Media.FFmpeg;
 
 namespace youtubertest
 {

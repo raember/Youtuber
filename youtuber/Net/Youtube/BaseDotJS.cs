@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using youtuber.Net;
+using Youtuber.Net;
 
-namespace youtuber.Net.Youtube
+namespace Youtuber.Net.Youtube
 {
     public class BaseDotJs : InternetSite
     {
