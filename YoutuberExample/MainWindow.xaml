@@ -1,0 +1,60 @@
+﻿<Window x:Class="youtuberExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtuberExample"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="595.242" Width="737.657">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Name="InputRow" Height="21"/>
+            <RowDefinition Name="DisplayRow"/>
+            <RowDefinition Name="InteractionRow" Height="30"/>
+            <RowDefinition Name="ProgressRow" Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid Name="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Name="InputTB"></TextBox>
+            <Button Name="ExecuteBtn" Grid.Column="1" Click="ExecuteBtn_OnClick" Content="Go"/>
+        </Grid>
+        <TabControl x:Name="DisplayTabCtl" Grid.Row="1">
+            <TabItem Name="VideoTab" Header="Video">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Name="ImagePreviewCol" Width="260"/>
+                        <ColumnDefinition Name="FileChoiceCol"/>
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="ImagePreview"/>
+                    <ListBox x:Name="FormatLB" Grid.Column="1" Margin="-3" SelectionChanged="FormatLB_OnSelectionChanged"/>
+                </Grid>
+            </TabItem>
+            <TabItem Name="SearchTab" Header="Search">
+                <ListView x:Name="SearchListView" MouseDoubleClick="SearchListView_OnMouseDoubleClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" Width="650"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="LocationTB" TextChanged="LocationTB_OnTextChanged"/>
+            <Button x:Name="LocationBtn" Content="..." Grid.Column="1" Click="LocationBtn_OnClick"/>
+            <Button x:Name="DownloadBtn" Content="Download" Grid.Column="2" Click="DownloadBtn_OnClick" IsEnabled="False"/>
+        </Grid>
+        <ProgressBar Name="ProgBar" Grid.Row="3"/>
+    </Grid>
+</Window>
