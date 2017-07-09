@@ -46,7 +46,7 @@ namespace Youtuber.Net {
             Cookies = cookies;
         }
 
-        public CookieCollection Cookies {get;}
+        public CookieCollection Cookies {get; private set;}
 
         public bool Success {get; protected set;}
 
@@ -63,6 +63,7 @@ namespace Youtuber.Net {
                 request.CookieContainer.Add(Cookies);
             } else { request = DefaultHttpWebRequest; }
             using (response = (HttpWebResponse) await request.GetResponseAsync()) {
+                Cookies = response.Cookies;
                 Stream responseStream = response.GetResponseStream();
                 if (responseStream == null) throw new WebException("No HttpWebResponse stream recieved.");
                 using (StreamReader strmReader = new StreamReader(responseStream, Encoding.UTF8, true)) {

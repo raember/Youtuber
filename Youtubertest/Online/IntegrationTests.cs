@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,6 +31,7 @@ namespace youtubertest {
         public async Task WikiExample(){
             const string VIDEOID = "TWcyIpul8OE";
             const string PLAYLISTID = "RDd2Y4dFVgS8g";
+            string basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}");
             //Uri link = new Uri($"https://www.youtube.com/watch?v={VIDEOID}&list={PLAYLISTID}");
             //Uri link = new Uri($"https://img.youtube.com/vi/{VIDEOID}/0.jpg");
@@ -78,18 +81,18 @@ namespace youtubertest {
                 Uri downloadUri = await bestAudio.GetDownloadUri();
                 string extension = bestAudio.Extension;
 
-                // Download (Don't do it like this. Do it properly, please)
-                byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
-                File.WriteAllBytes($"./{title}{extension}", data);
+                // Download
+                string path = Path.Combine(basePath, title + extension);
+                await new WebClient().DownloadFileTaskAsync(downloadUri, path);
             } else if (result.HasFlag(URLResult.IsImage)) { // You're an image, Harry!
                 string videoId = URLUtility.ExtractVideoID(link);
 
                 // Get your download link
                 Uri downloadUri = Image.FromID(videoId, ImageType.MaximumResolutionDefault);
 
-                // Download (Don't do it like this. Do it properly, please)
-                byte[] data = await new WebClient().DownloadDataTaskAsync(downloadUri);
-                File.WriteAllBytes("./image.jpg", data);
+                // Download
+                string path = Path.Combine(basePath, "image.jpg");
+                await new WebClient().DownloadFileTaskAsync(downloadUri, path);
             }
         }
 
