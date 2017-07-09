@@ -4,25 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Youtuber.Net;
 using Youtuber.Net.Youtube;
 using Youtuber.Net.Youtube.Official;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class OfficialApiTest
-    {
-        private string apiKey = string.Empty; // Insert API key here.
-        private FileStream fileStream;
+    public class OfficialApiTest {
         private readonly Mock<HttpWebRequest> httpWebRequestMock = new Mock<HttpWebRequest>();
         private readonly Mock<HttpWebResponse> httpWebResponseMock = new Mock<HttpWebResponse>();
+        private string apiKey = string.Empty; // Insert API key here.
+        private FileStream fileStream;
 
-        public async Task MakeSureApiKeyIsAvailable() {
+        public async Task MakeSureApiKeyIsAvailable(){
             if (string.IsNullOrEmpty(apiKey)) {
                 Video video = await Video.fromID("TWcyIpul8OE");
                 string playerVersion = video.PlayerVersion;

@@ -1,9 +1,7 @@
 ﻿using System;
 
-namespace Youtuber.Net.Youtube
-{
-    public static class Image
-    {
+namespace Youtuber.Net.Youtube {
+    public static class Image {
         public static Uri FromID(string videoID, ImageType type){
             string name = string.Empty;
             switch (type) {
@@ -39,8 +37,7 @@ namespace Youtuber.Net.Youtube
         }
     }
 
-    public enum ImageType
-    {
+    public enum ImageType {
         _0,
         _1,
         _2,

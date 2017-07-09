@@ -7,10 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Youtuber.Net.Youtube
-{
-    public class Decipherer
-    {
+namespace Youtuber.Net.Youtube {
+    public class Decipherer {
         internal static WebClient webClient = new WebClient();
 
         public static readonly Func<string, int, string> Swap = (cipher, index) => {

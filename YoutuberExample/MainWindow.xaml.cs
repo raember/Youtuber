@@ -13,17 +13,16 @@ using Youtuber.Net.Youtube;
 using Youtuber.Net.Youtube.Official;
 using Image = Youtuber.Net.Youtube.Image;
 
-namespace youtuberExample
-{
-    public partial class MainWindow : Window
-    {
+namespace youtuberExample {
+    public partial class MainWindow : Window {
         private string apiKey;
         private Video currentVideo;
 
-        private DirectoryInfo downloadDir = new DirectoryInfo(Path.GetDirectoryName(Application.ResourceAssembly.Location));
-        private string filename;
+        private DirectoryInfo downloadDir =
+            new DirectoryInfo(Path.GetDirectoryName(Application.ResourceAssembly.Location));
 
         private List<VideoFile> downloadFiles;
+        private string filename;
         private Search searcher;
 
         private List<Search.Result> SearchResults;
@@ -99,14 +98,14 @@ namespace youtuberExample
         private void LocationBtn_OnClick(object sender, RoutedEventArgs e){
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = downloadDir.FullName;
-            
+
             if ((bool) !sfd.ShowDialog(Owner)) return;
             downloadDir = new DirectoryInfo(Path.GetDirectoryName(sfd.FileName));
             filename = Path.GetFileName(sfd.FileName);
             LocationTB.Text = Path.Combine(downloadDir.FullName, filename);
         }
 
-        private void FormatLB_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void FormatLB_OnSelectionChanged(object sender, SelectionChangedEventArgs e){
             DownloadBtn.IsEnabled = true;
             downloadDir = new DirectoryInfo(Path.GetDirectoryName(LocationTB.Text));
             filename = Path.GetFileNameWithoutExtension(LocationTB.Text);
@@ -116,7 +115,7 @@ namespace youtuberExample
             LocationTB.Text = Path.Combine(downloadDir.FullName, filename);
         }
 
-        private void LocationTB_OnTextChanged(object sender, TextChangedEventArgs e) {
+        private void LocationTB_OnTextChanged(object sender, TextChangedEventArgs e){
             downloadDir = new DirectoryInfo(Path.GetDirectoryName(LocationTB.Text));
             filename = Path.GetFileNameWithoutExtension(LocationTB.Text);
         }

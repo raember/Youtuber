@@ -7,8 +7,7 @@ namespace Youtuber.Net {
     /// <summary>
     ///     Utility class revolving Youtube uris.
     /// </summary>
-    public static class URLUtility
-    {
+    public static class URLUtility {
         private const string VIDEOIDPATTERN = @"(?<id>[\w\d_-]{11})";
         private const string PLAYLISTPATTERNSHORT = @"(?<pl>[\w\d_-]{13})";
         private const string PLAYLISTPATTERNLONG = @"(?<pl>[\w\d_-]{34})";
@@ -131,8 +130,7 @@ namespace Youtuber.Net {
     }
 
     [Flags]
-    public enum URLResult
-    {
+    public enum URLResult {
         IsValid = 1 << 0,
         HasVideoID = 1 << 1,
         IsVideo = 1 << 2,

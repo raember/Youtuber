@@ -3,8 +3,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 
 namespace Youtuber.Net {
-    public class Recommendation
-    {
+    public class Recommendation {
         protected Recommendation(string title, string videoId){
             Title = title;
             VideoID = videoId;
@@ -30,8 +29,7 @@ namespace Youtuber.Net {
             return Title;
         }
 
-        public class Video : Recommendation
-        {
+        public class Video : Recommendation {
             internal Video(string title, string videoId, string username, TimeSpan duration, long views) : base(title,
                 videoId){
                 Username = username;
@@ -73,8 +71,7 @@ namespace Youtuber.Net {
             }
         }
 
-        public class Playlist : Recommendation
-        {
+        public class Playlist : Recommendation {
             internal Playlist(string title, string videoId, string playlistId, string from,
                               int videosCount, bool videoCountUnfinished) : base(title, videoId){
                 PlaylistID = playlistId;
@@ -102,8 +99,7 @@ namespace Youtuber.Net {
             }
         }
 
-        public class LiveStream : Recommendation
-        {
+        public class LiveStream : Recommendation {
             //yt-badge-live
             internal LiveStream(string title, string videoId, string username, long views) : base(title,
                 videoId){

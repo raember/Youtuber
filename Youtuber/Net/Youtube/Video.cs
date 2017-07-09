@@ -6,15 +6,12 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Youtuber.Net.Youtube;
 
 namespace Youtuber.Net.Youtube {
-    public class Video : InternetSite
-    {
+    public class Video : InternetSite {
+        private dynamic json;
         private Video(Uri uri) : base(uri){ }
         private Video(Uri uri, CookieCollection cookies) : base(uri, cookies){ }
-
-        private dynamic json;
 
         public string Title
         {
@@ -77,20 +74,23 @@ namespace Youtuber.Net.Youtube {
             }
         }
 
-        public string UserID {
-            get {
+        public string UserID
+        {
+            get
+            {
                 Match match = Regex.Match(content, @"(?<=\<a href\=""/user/)[^/""]+?(?="")", RegexOptions.Singleline);
-                if (!match.Success)
-                    return string.Empty;
+                if (!match.Success) return string.Empty;
                 return Regex.Unescape(match.Value);
             }
         }
 
-        public string ChannelID {
-            get {
-                Match match = Regex.Match(content, @"(?<=yt-user-info""\>\s*?\<a href\=""/channel/)[^/""]+?(?="")", RegexOptions.Singleline);
-                if (!match.Success)
-                    return string.Empty;
+        public string ChannelID
+        {
+            get
+            {
+                Match match = Regex.Match(content, @"(?<=yt-user-info""\>\s*?\<a href\=""/channel/)[^/""]+?(?="")",
+                    RegexOptions.Singleline);
+                if (!match.Success) return string.Empty;
                 return Regex.Unescape(match.Value);
             }
         }
@@ -209,11 +209,11 @@ namespace Youtuber.Net.Youtube {
             try {
                 dynamic args = json.args;
 
-                string adaptiveFormatStr = args == null ? String.Empty : args.adaptive_fmts;
-                adaptiveFormatStr = string.IsNullOrEmpty(adaptiveFormatStr) ? String.Empty : adaptiveFormatStr;
+                string adaptiveFormatStr = args == null ? string.Empty : args.adaptive_fmts;
+                adaptiveFormatStr = string.IsNullOrEmpty(adaptiveFormatStr) ? string.Empty : adaptiveFormatStr;
                 adaptiveFormatStr = Regex.Unescape(adaptiveFormatStr);
                 string urlencstreammapStr = args.url_encoded_fmt_stream_map;
-                urlencstreammapStr = string.IsNullOrEmpty(urlencstreammapStr) ? String.Empty : urlencstreammapStr;
+                urlencstreammapStr = string.IsNullOrEmpty(urlencstreammapStr) ? string.Empty : urlencstreammapStr;
                 urlencstreammapStr = Regex.Unescape(urlencstreammapStr);
                 string nonDashFormatDetails = args.fmt_list;
                 List<string> formatDetailsStr = Regex.Unescape(nonDashFormatDetails).Split(',').ToList();
@@ -221,20 +221,19 @@ namespace Youtuber.Net.Youtube {
                     formatDetailsStr.ConvertAll(s => Regex.Match(s,
                                                     @"^(?<itag>\d+?)/(?<width>\d+?)x(?<height>\d+?)/(?<arg1>\d+?)/(?<arg2>\d+?)/(?<arg3>\d+?)$"));
                 List<VideoFile> formats = new List<VideoFile>();
-                if (!string.IsNullOrEmpty(adaptiveFormatStr)) {
+                if (!string.IsNullOrEmpty(adaptiveFormatStr))
                     foreach (string formatStr in adaptiveFormatStr.Split(',')) {
                         VideoFile vf = VideoFile.FromFormatString(formatStr, PlayerVersion);
                         formats.Add(vf);
                     }
-                }
-                if (!string.IsNullOrEmpty(urlencstreammapStr)) {
+                if (!string.IsNullOrEmpty(urlencstreammapStr))
                     foreach (string formatStr in urlencstreammapStr.Split(',')) {
                         VideoFile vf = VideoFile.FromFormatString(formatStr, PlayerVersion);
                         formats.Add(vf);
                         Match match =
                             formatDetails.FirstOrDefault(fd => int.Parse(fd.Groups["itag"].Value).Equals(vf.ITag));
                         if (match != null) {
-                            var vfn = vf as VideoFile.Normal;
+                            VideoFile.Normal vfn = vf as VideoFile.Normal;
                             vfn.Width = int.Parse(match.Groups["width"].Value);
                             vfn.Height = int.Parse(match.Groups["height"].Value);
                             vfn.Arg1 = int.Parse(match.Groups["arg1"].Value);
@@ -242,7 +241,6 @@ namespace Youtuber.Net.Youtube {
                             vfn.Arg3 = int.Parse(match.Groups["arg3"].Value);
                         }
                     }
-                }
                 formats.Sort();
                 return formats;
             } catch (Exception e) {

@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Youtuber.Net;
 using Youtuber.Net.Youtube;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
     public class IntegrationTests {
-
-        public static async Task<bool> RemoteFilePresent(VideoFile videoFile, CookieCollection cookies) {
+        public static async Task<bool> RemoteFilePresent(VideoFile videoFile, CookieCollection cookies){
             Uri link = await videoFile.GetDownloadUri();
             HttpWebRequest request = WebRequest.CreateHttp(link);
             request.Method = "HEAD";
             request.CookieContainer = new CookieContainer();
             request.CookieContainer.Add(cookies);
-            using (var response = request.GetResponse() as HttpWebResponse) {
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse) {
                 return HttpStatusCode.OK.Equals(response.StatusCode);
             }
         }
@@ -102,7 +98,7 @@ namespace youtubertest
             Video video = await Video.fromID("OpIQNxiKJoE");
             HashSet<string> usedVideoIDs = new HashSet<string>();
             usedVideoIDs.Add(video.VideoID);
-            List<string> availableVideoIdBuffer = new List<string>{ "b-v-lTtS_os", "FSGfN9rr78Q" };
+            List<string> availableVideoIdBuffer = new List<string>{"b-v-lTtS_os", "FSGfN9rr78Q"};
 
             List<string> urlKeys = new List<string>{
                 "ei",
@@ -244,16 +240,17 @@ namespace youtubertest
                     string urlParams = DictToCsv(dictionary, urlKeys);
                     string urlLeftovers = DictToString(dictionary);
                     dashAudioLiveStrWriter.Write(vf.ToCsvRow() +
-                                             $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
+                                                 $";{video.VideoID};{video.Title.Replace(';', ':')};{video.User};{url}{urlParams};{urlLeftovers}\n");
                     dashAudioLiveStrWriter.Flush();
                     urlStrWriter.Write($"dash audio live;{video.VideoID};{url}{urlParams};{urlLeftovers}\n");
                     urlStrWriter.Flush();
                 }
 
-                string newVideoId = String.Empty;
+                string newVideoId = string.Empty;
                 try {
                     List<Recommendation.Video> recommendations = video
-                        .RelatedVideos.Where(rec => !usedVideoIDs.Contains(rec.VideoID)).OfType<Recommendation.Video>().ToList();
+                        .RelatedVideos.Where(rec => !usedVideoIDs.Contains(rec.VideoID)).OfType<Recommendation.Video>()
+                        .ToList();
                     recommendations.RemoveAll(v => v.Username.Equals(video.User));
                     List<string> newIds = recommendations.ConvertAll(rec => rec.VideoID);
                     availableVideoIdBuffer.AddRange(newIds);
@@ -270,7 +267,7 @@ namespace youtubertest
         }
 
         private string DictToCsv(Dictionary<string, string> dictionary, List<string> keys){
-            string result = String.Empty;
+            string result = string.Empty;
             foreach (string key in keys) {
                 result += ";";
                 if (dictionary.ContainsKey(key)) {
@@ -282,10 +279,9 @@ namespace youtubertest
         }
 
         private string DictToString(Dictionary<string, string> dictionary){
-            string result = String.Empty;
-            foreach (KeyValuePair<string, string> keyValuePair in dictionary) {
-                result += $"&{keyValuePair.Key}={keyValuePair.Value}"; 
-            }
+            string result = string.Empty;
+            foreach (KeyValuePair<string, string> keyValuePair in dictionary)
+                result += $"&{keyValuePair.Key}={keyValuePair.Value}";
             return result;
         }
 
@@ -293,9 +289,8 @@ namespace youtubertest
         public async Task DownloadAvailable(){
             foreach (string id in new[]{"FffTJk-gFKc", "OEVzPCY2T-g", "tlfAQ33YE1A"}) {
                 Video video = await Video.fromID(id);
-                foreach (VideoFile downloadable in video.ExtractFiles()) {
+                foreach (VideoFile downloadable in video.ExtractFiles())
                     Assert.IsTrue(await RemoteFilePresent(downloadable, video.Cookies));
-                }
             }
         }
     }

@@ -4,12 +4,9 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Youtuber.Net;
 
-namespace Youtuber.Net.Youtube
-{
-    public abstract class VideoFile : IComparable
-    {
+namespace Youtuber.Net.Youtube {
+    public abstract class VideoFile : IComparable {
         internal const string ITAG = "itag";
         internal const string TYPE = "type";
         internal const string QUALITY = "quality";
@@ -108,8 +105,7 @@ namespace Youtuber.Net.Youtube
             return $"{ITag} : {Type}";
         }
 
-        public class Normal : VideoFile
-        {
+        public class Normal : VideoFile {
             internal Normal(Dictionary<string, string> arguments) : base(arguments){
                 switch (arguments[QUALITY]) {
                     case "small":
@@ -155,8 +151,7 @@ namespace Youtuber.Net.Youtube
             }
         }
 
-        public abstract class Dash : VideoFile
-        {
+        public abstract class Dash : VideoFile {
             public Dash(Dictionary<string, string> arguments) : base(arguments){
                 Bitrate = int.Parse(arguments[BITRATE]);
                 Arguments.Remove(BITRATE);
@@ -190,8 +185,7 @@ namespace Youtuber.Net.Youtube
             public List<string> XTags {get;}
         }
 
-        public class DashVideo : Dash
-        {
+        public class DashVideo : Dash {
             public DashVideo(Dictionary<string, string> arguments) : base(arguments){
                 Fps = int.Parse(arguments[FPS]);
                 Arguments.Remove(FPS);
@@ -268,8 +262,7 @@ namespace Youtuber.Net.Youtube
             }
         }
 
-        public class DashVideoLive : DashVideo
-        {
+        public class DashVideoLive : DashVideo {
             public DashVideoLive(Dictionary<string, string> arguments) : base(arguments){
                 TargetDurationSec = double.Parse(arguments[TARGETDURATIONSEC]);
                 Arguments.Remove(TARGETDURATIONSEC);
@@ -326,8 +319,7 @@ namespace Youtuber.Net.Youtube
             }
         }
 
-        public class DashVideo3D : DashVideo
-        {
+        public class DashVideo3D : DashVideo {
             public DashVideo3D(Dictionary<string, string> arguments) : base(arguments){
                 StereoLayout = int.Parse(arguments[STEREOLAYOUT]);
                 Arguments.Remove(STEREOLAYOUT);
@@ -384,8 +376,7 @@ namespace Youtuber.Net.Youtube
             }
         }
 
-        public class DashAudio : Dash
-        {
+        public class DashAudio : Dash {
             public DashAudio(Dictionary<string, string> arguments) : base(arguments){
                 Match codec = Regex.Match(Type, @"codecs\=""(?<audio>[^"",]+?)""");
                 if (!codec.Success) throw new Exception($"I coudn't parse the codec information out of {Type}");
@@ -439,8 +430,7 @@ namespace Youtuber.Net.Youtube
             }
         }
 
-        public class DashAudioLive : DashAudio
-        {
+        public class DashAudioLive : DashAudio {
             public DashAudioLive(Dictionary<string, string> arguments) : base(arguments){
                 TargetDurationSec = double.Parse(arguments[TARGETDURATIONSEC]);
                 Arguments.Remove(TARGETDURATIONSEC);
@@ -492,8 +482,7 @@ namespace Youtuber.Net.Youtube
         }
     }
 
-    public enum VideoQuality
-    {
+    public enum VideoQuality {
         Small,
         Medium,
         HD720

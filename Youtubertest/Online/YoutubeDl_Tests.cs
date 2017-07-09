@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Youtuber.Net;
 using Youtuber.Net.Youtube;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class YoutubeDl_Tests
-    {
+    public class YoutubeDl_Tests {
         [TestMethod]
         public async Task BaW_jenozKc(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=BaW_jenozKc");
@@ -92,10 +89,10 @@ namespace youtubertest
             foreach (VideoFile downloadable in downloadables)
                 Assert.IsTrue(await IntegrationTests.RemoteFilePresent(downloadable, video.Cookies));
         }
-        
+
 
         [TestMethod]
-        public async Task yZIXLfi8CZQ_Embed_only_bug1746() {
+        public async Task yZIXLfi8CZQ_Embed_only_bug1746(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=yZIXLfi8CZQ");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -115,7 +112,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task a9LDPn_MO4I_256k_DASH_audio_format_141_via_DASH_manifest() {
+        public async Task a9LDPn_MO4I_256k_DASH_audio_format_141_via_DASH_manifest(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=a9LDPn-MO4I");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -136,7 +133,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task IB3lcPjvWLA_DASH_manifest_with_encrypted_signature() {
+        public async Task IB3lcPjvWLA_DASH_manifest_with_encrypted_signature(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=IB3lcPjvWLA");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -156,7 +153,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task nfWlot6h_JM_BaseJS_function_containing_dollar_sign() {
+        public async Task nfWlot6h_JM_BaseJS_function_containing_dollar_sign(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=nfWlot6h_JM");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -176,7 +173,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task T4XJQO3qol8_Controversy_video() {
+        public async Task T4XJQO3qol8_Controversy_video(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=T4XJQO3qol8");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -188,7 +185,8 @@ namespace youtubertest
             Assert.AreEqual("TheAmazingAtheist", video.UserID);
             Assert.AreEqual("SUBSCRIBE: http://www.youtube.com/saturninefilms" +
                             "\n" +
-                            "\nEven Obama has taken a stand against freedom on this issue: http://www.huffingtonpost.com/2010/09/09/obama-gma-interview-quran_n_710282.html", video.Description);
+                            "\nEven Obama has taken a stand against freedom on this issue: http://www.huffingtonpost.com/2010/09/09/obama-gma-interview-quran_n_710282.html",
+                video.Description);
             Assert.AreNotEqual(-1, video.Likes);
             Assert.AreNotEqual(-1, video.Dislikes);
             List<VideoFile> downloadables = video.ExtractFiles();
@@ -199,7 +197,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task HtVdAasjOgU_Normal_age_gate_video_No_vevo_embed_allowed() {
+        public async Task HtVdAasjOgU_Normal_age_gate_video_No_vevo_embed_allowed(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=HtVdAasjOgU");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -219,7 +217,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task _6kLq3WMV1nU_Age_gate_video_with_encrypted_signature() {
+        public async Task _6kLq3WMV1nU_Age_gate_video_with_encrypted_signature(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=6kLq3WMV1nU");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -239,7 +237,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task __2ABJjxzNo_video_info_is_none_bug4421() {
+        public async Task __2ABJjxzNo_video_info_is_none_bug4421(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=__2ABJjxzNo");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -259,7 +257,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task lqQg6PlCWgI_Olympics_bug4431() {
+        public async Task lqQg6PlCWgI_Olympics_bug4431(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=lqQg6PlCWgI");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -269,7 +267,8 @@ namespace youtubertest
             Assert.AreEqual(TimeSpan.FromSeconds(6085), video.Duration);
             Assert.AreEqual("Olympic", video.User);
             Assert.AreEqual("olympic", video.UserID);
-            Assert.AreEqual("HO09  - Women -  GER-AUS - Hockey - 31 July 2012 - London 2012 Olympic Games", video.Description);
+            Assert.AreEqual("HO09  - Women -  GER-AUS - Hockey - 31 July 2012 - London 2012 Olympic Games",
+                video.Description);
             Assert.AreNotEqual(-1, video.Likes);
             Assert.AreNotEqual(-1, video.Dislikes);
             List<VideoFile> downloadables = video.ExtractFiles();
@@ -280,7 +279,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task _b_2C3KPAM0_non_square_pixels() {
+        public async Task _b_2C3KPAM0_non_square_pixels(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=_b-2C3KPAM0");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -290,7 +289,8 @@ namespace youtubertest
             Assert.AreEqual(TimeSpan.FromSeconds(85), video.Duration);
             Assert.AreEqual("孫艾倫", video.User);
             Assert.AreEqual("AllenMeow", video.UserID);
-            Assert.AreEqual("made by Wacom from Korea | 字幕&加油添醋 by TY\'s Allen | 感謝heylisa00cavey1001同學熱情提供梗及翻譯", video.Description);
+            Assert.AreEqual("made by Wacom from Korea | 字幕&加油添醋 by TY\'s Allen | 感謝heylisa00cavey1001同學熱情提供梗及翻譯",
+                video.Description);
             Assert.AreNotEqual(-1, video.Likes);
             Assert.AreNotEqual(-1, video.Dislikes);
             List<VideoFile> downloadables = video.ExtractFiles();
@@ -301,13 +301,14 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task qEJwOuvDf7I_url_encoded_fmt_stream_map_is_empty_string() {
+        public async Task qEJwOuvDf7I_url_encoded_fmt_stream_map_is_empty_string(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=qEJwOuvDf7I");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
             Assert.IsTrue(video.Success);
             Assert.AreEqual(new DateTime(2015, 4, 4), video.UploadedDateTime);
-            Assert.AreEqual("Обсуждение судебной практики по выборам 14 сентября 2014 года в Санкт-Петербурге", video.Title);
+            Assert.AreEqual("Обсуждение судебной практики по выборам 14 сентября 2014 года в Санкт-Петербурге",
+                video.Title);
             Assert.AreEqual("Наблюдатели Петербурга", video.User);
             Assert.AreEqual("spbelect", video.UserID);
             Assert.AreNotEqual(-1, video.Likes);
@@ -320,7 +321,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task FIl7x6_3R5Y_Extraction_from_multiple_DASH_manifests_bug6097() {
+        public async Task FIl7x6_3R5Y_Extraction_from_multiple_DASH_manifests_bug6097(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=FIl7x6_3R5Y");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -340,7 +341,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task CsmdDsKjzN8_DASH_manifest_with_segment_list() {
+        public async Task CsmdDsKjzN8_DASH_manifest_with_segment_list(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=CsmdDsKjzN8");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -359,7 +360,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task lsguqyKfVQg_Title_with_JS_like_syntax_bug7468() {
+        public async Task lsguqyKfVQg_Title_with_JS_like_syntax_bug7468(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=lsguqyKfVQg");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -379,7 +380,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task Ms7iBXnlUO8_Tags_with_JS_like_syntax_bug7468() {
+        public async Task Ms7iBXnlUO8_Tags_with_JS_like_syntax_bug7468(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=Ms7iBXnlUO8");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -395,13 +396,15 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task M4gD1WSo5mA_Video_licensed_under_Creative_Commons() {
+        public async Task M4gD1WSo5mA_Video_licensed_under_Creative_Commons(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=M4gD1WSo5mA");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
             Assert.IsTrue(video.Success);
             Assert.AreEqual(new DateTime(2015, 1, 27), video.UploadedDateTime);
-            Assert.AreEqual("William Fisher, CopyrightX: Lecture 3.2, The Subject Matter of Copyright: Drama and choreography", video.Title);
+            Assert.AreEqual(
+                "William Fisher, CopyrightX: Lecture 3.2, The Subject Matter of Copyright: Drama and choreography",
+                video.Title);
             Assert.AreEqual(TimeSpan.FromSeconds(721), video.Duration);
             Assert.AreEqual("The Berkman Klein Center for Internet & Society", video.User);
             Assert.AreEqual("BerkmanCenter", video.UserID);
@@ -415,7 +418,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task eQcmzGIKrzg_Channel_like_uploader_url() {
+        public async Task eQcmzGIKrzg_Channel_like_uploader_url(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=eQcmzGIKrzg");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -435,7 +438,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task V36LpHqtcDY() {
+        public async Task V36LpHqtcDY(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=V36LpHqtcDY");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -473,7 +476,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task yYr8q0y5Jfg_Rental_video_preview() {
+        public async Task yYr8q0y5Jfg_Rental_video_preview(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=yYr8q0y5Jfg");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -493,7 +496,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task iqKdEhx_dD4_YouTube_Red_video_with_episode_data() {
+        public async Task iqKdEhx_dD4_YouTube_Red_video_with_episode_data(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=iqKdEhx-dD4");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -513,7 +516,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task _1t24XAntNCY_Itag_212() {
+        public async Task _1t24XAntNCY_Itag_212(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=1t24XAntNCY");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -528,12 +531,13 @@ namespace youtubertest
             List<VideoFile> downloadables = video.ExtractFiles();
 
             Assert.IsTrue(downloadables.Count > 0);
+            Assert.IsTrue(downloadables.Exists(d => d.ITag == 212));
             foreach (VideoFile downloadable in downloadables)
                 Assert.IsTrue(await IntegrationTests.RemoteFilePresent(downloadable, video.Cookies));
         }
 
         [TestMethod]
-        public async Task sJL6WA_aGkQ_Geo_restricted_to_JP() {
+        public async Task sJL6WA_aGkQ_Geo_restricted_to_JP(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=sJL6WA-aGkQ");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);
@@ -551,7 +555,7 @@ namespace youtubertest
         }
 
         [TestMethod]
-        public async Task MuAGGZNfUkU() {
+        public async Task MuAGGZNfUkU(){
             Uri uri = new Uri("https://www.youtube.com/watch?v=MuAGGZNfUkU");
             string videoId = URLUtility.ExtractVideoID(uri);
             Video video = await Video.fromID(videoId);

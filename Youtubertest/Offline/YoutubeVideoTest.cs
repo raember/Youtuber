@@ -9,16 +9,14 @@ using Moq;
 using Youtuber.Net;
 using Youtuber.Net.Youtube;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class YoutubeVideoTest
-    {
+    public class YoutubeVideoTest {
         private const string VIDEOID = "TWcyIpul8OE";
         private readonly string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-        private FileStream fileStream;
         private readonly Mock<HttpWebRequest> httpWebRequestMock = new Mock<HttpWebRequest>();
         private readonly Mock<HttpWebResponse> httpWebResponseMock = new Mock<HttpWebResponse>();
+        private FileStream fileStream;
 
         [TestInitialize]
         public void Initialize(){

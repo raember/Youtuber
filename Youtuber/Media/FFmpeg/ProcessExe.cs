@@ -1,46 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.ComponentModel;
-       
-       
-namespace Youtuber.Media.FFmpeg
-{
-    public sealed class ProcessExe
-    {
-        private struct FFmpegProcess
-        {
-            public string strVideoFilename;
-            public string strAudioFilename;
-            public Process process;
-        };
 
-        private List<FFmpegProcess> listProcess;
+namespace Youtuber.Media.FFmpeg {
+    public sealed class ProcessExe {
+        private readonly List<FFmpegProcess> listProcess;
 
-        public ProcessExe()
-        {
+        public ProcessExe(){
             listProcess = new List<FFmpegProcess>();
         }
 
-        ~ProcessExe()
-        {            
+        ~ProcessExe(){
             // dispose processes --- may not be necessary
-            foreach (FFmpegProcess proc in listProcess)
-            {
-                if (proc.process.HasExited == false)
-                    proc.process.Kill();
+            foreach (FFmpegProcess proc in listProcess) {
+                if (proc.process.HasExited == false) proc.process.Kill();
 
                 proc.process.Close();
             }
         }
 
         // public for test purpose
-        public void StartProcess(string strVideoFilename, string strAudioFilename)
-        {
+        public void StartProcess(string strVideoFilename, string strAudioFilename){
             FFmpegProcess newProcess;
 
             newProcess.strVideoFilename = strVideoFilename;
@@ -52,12 +31,17 @@ namespace Youtuber.Media.FFmpeg
 
             newProcess.process = Process.Start(startInfo);
 
-            newProcess.process.WaitForExit();  // for test purpose
+            newProcess.process.WaitForExit(); // for test purpose
 
-            listProcess.Add(newProcess);  // TODO:need to be sure newProcess will be copied and not referenced -- cant find articles explicitly stated about it, but probably ok...
+            listProcess.Add(
+                newProcess); // TODO:need to be sure newProcess will be copied and not referenced -- cant find articles explicitly stated about it, but probably ok...
             Debug.WriteLine(newProcess.process.ExitCode);
         }
 
-
+        private struct FFmpegProcess {
+            public string strVideoFilename;
+            public string strAudioFilename;
+            public Process process;
+        }
     }
 }

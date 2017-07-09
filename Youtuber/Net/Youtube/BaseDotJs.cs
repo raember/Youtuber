@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Youtuber.Net;
 
-namespace Youtuber.Net.Youtube
-{
-    public class BaseDotJs : InternetSite
-    {
+namespace Youtuber.Net.Youtube {
+    public class BaseDotJs : InternetSite {
         private static readonly Hashtable Files = new Hashtable(new Dictionary<string, BaseDotJs>());
 
         private BaseDotJs(string playerVersion) : base(
@@ -53,7 +50,7 @@ namespace Youtuber.Net.Youtube
             return Regex.Match(content, @"(?<=\(b,""key"","")[^""]+?(?=""\);)").Value;
         }
 
-        protected override void SetCookies() {
+        protected override void SetCookies(){
             request.Accept = "*/*";
         }
     }

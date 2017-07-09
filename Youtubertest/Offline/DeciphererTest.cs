@@ -2,11 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Youtuber.Net.Youtube;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class DeciphererTest
-    {
+    public class DeciphererTest {
         [TestMethod]
         public void CorrectFunctions(){
             Assert.AreEqual("ABCDE", Decipherer.Swap.Invoke("ABCDE", 0));

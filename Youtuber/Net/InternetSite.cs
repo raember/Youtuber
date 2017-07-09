@@ -21,13 +21,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Youtuber.Net
-{
+namespace Youtuber.Net {
     /// <summary>
     ///     Contains the most basic methods for interacting with an internet site.
     /// </summary>
-    public abstract class InternetSite
-    {
+    public abstract class InternetSite {
         public static HttpWebRequest DefaultHttpWebRequest = null;
 
         public static string UserAgent =
@@ -43,20 +41,20 @@ namespace Youtuber.Net
             Cookies = new CookieCollection();
         }
 
-        protected InternetSite(Uri uri, CookieCollection cookies) {
+        protected InternetSite(Uri uri, CookieCollection cookies){
             Uri = uri;
             Cookies = cookies;
         }
 
-        public CookieCollection Cookies{get;}
-
-        protected abstract void SetCookies();
+        public CookieCollection Cookies {get;}
 
         public bool Success {get; protected set;}
 
-        public Uri Uri { get; protected set; }
+        public Uri Uri {get; protected set;}
 
-        protected async Task Load() {
+        protected abstract void SetCookies();
+
+        protected async Task Load(){
             if (DefaultHttpWebRequest == null) {
                 request = WebRequest.CreateHttp(Uri);
                 request.UserAgent = UserAgent;

@@ -1,24 +1,16 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Youtuber.Net.Youtube.Official
-{
-    public sealed class Search : ApiBase
-    {
+namespace Youtuber.Net.Youtube.Official {
+    public sealed class Search : ApiBase {
         private const string baseUrl = "https://www.googleapis.com/youtube/v3/search";
-        private string requestedUrl;
         private dynamic json;
         private string nextPageToken;
+        private string requestedUrl;
 
         public Search(string apiKey) : base(apiKey){
             Results = new List<Result>();
@@ -55,7 +47,7 @@ namespace Youtuber.Net.Youtube.Official
                 TotalResults = int.Parse(json.pageInfo.totalResults.ToString());
                 ResultsPerPage = int.Parse(json.pageInfo.resultsPerPage.ToString());
                 JArray items = json.items;
-                foreach (dynamic item in items) { results.Add(Result.FromJson(item)); }
+                foreach (dynamic item in items) results.Add(Result.FromJson(item));
             } catch (Exception e) {
                 Success = false;
                 return new List<Result>();
@@ -76,23 +68,14 @@ namespace Youtuber.Net.Youtube.Official
         }
 
         public async Task<List<Result>> GetNextPage(){
-            if (HasNextPage) { return await Execute(new Uri($"{requestedUrl}&{Params.PageToken(nextPageToken)}")); }
+            if (HasNextPage) return await Execute(new Uri($"{requestedUrl}&{Params.PageToken(nextPageToken)}"));
             return new List<Result>();
         }
 
-        public class Result
-        {
+        public class Result {
             protected dynamic Json;
-            public string ETag {get;}
-            public DateTime PublishedAt {get;}
-            public string ChannelID {get;}
-            public string Title {get;}
-            public string Description {get;}
-            public List<Image> Thumbnails {get;}
-            public string ChannelTitle {get;}
-            public string LiveBroadcastContent {get;}
 
-            protected Result(Object json){
+            protected Result(object json){
                 Json = json;
                 ETag = Json.etag.ToString();
                 dynamic snippet = Json.snippet;
@@ -107,6 +90,15 @@ namespace Youtuber.Net.Youtube.Official
                 ChannelTitle = snippet.channelTitle.ToString();
                 LiveBroadcastContent = snippet.liveBroadcastContent.ToString();
             }
+
+            public string ETag {get;}
+            public DateTime PublishedAt {get;}
+            public string ChannelID {get;}
+            public string Title {get;}
+            public string Description {get;}
+            public List<Image> Thumbnails {get;}
+            public string ChannelTitle {get;}
+            public string LiveBroadcastContent {get;}
 
             internal static Result FromJson(dynamic json){
                 switch (json.id.kind.ToString()) {
@@ -125,9 +117,8 @@ namespace Youtuber.Net.Youtube.Official
                 return Title;
             }
 
-            public class Video : Result
-            {
-                protected Video(Object json) : base(json){
+            public class Video : Result {
+                protected Video(object json) : base(json){
                     VideoID = Json.id.videoId.ToString();
                 }
 
@@ -142,9 +133,8 @@ namespace Youtuber.Net.Youtube.Official
                 }
             }
 
-            public class Playlist : Result
-            {
-                protected Playlist(Object json) : base(json){
+            public class Playlist : Result {
+                protected Playlist(object json) : base(json){
                     PlaylistID = Json.id.playlistId.ToString();
                 }
 
@@ -159,9 +149,8 @@ namespace Youtuber.Net.Youtube.Official
                 }
             }
 
-            public class Channel : Result
-            {
-                protected Channel(Object json) : base(json){
+            public class Channel : Result {
+                protected Channel(object json) : base(json){
                     ChannelID = Json.id.channelId.ToString();
                 }
 
@@ -177,16 +166,10 @@ namespace Youtuber.Net.Youtube.Official
             }
         }
 
-        public class Image
-        {
+        public class Image {
             protected dynamic Json;
 
-            public Uri Url {get;}
-            public int Width {get;}
-            public int Height {get;}
-            public string Type {get;}
-
-            internal Image(Object json, string type){
+            internal Image(object json, string type){
                 Json = json;
                 Type = type;
                 Url = new Uri(Json.url.ToString());
@@ -196,13 +179,44 @@ namespace Youtuber.Net.Youtube.Official
                 } catch (Exception) { Width = Height = 0; }
             }
 
+            public Uri Url {get;}
+            public int Width {get;}
+            public int Height {get;}
+            public string Type {get;}
+
             public override string ToString(){
                 return $"{Type}: {Width}x{Height}";
             }
         }
 
-        public static class Params
-        {
+        public static class Params {
+            public enum ChannelTypes {
+                Any,
+                Show
+            }
+
+            public enum EventTypes {
+                Completed,
+                Live,
+                Upcoming
+            }
+
+            public enum Orders {
+                Date,
+                Rating,
+                Relevance,
+                Title,
+                VideoCount,
+                ViewCount
+            }
+
+            public enum Unit {
+                Meter,
+                Kilometer,
+                Feet,
+                Miles
+            }
+
             public static string ChannelID(string channelId){
                 return $"channelId={channelId}";
             }
@@ -215,16 +229,11 @@ namespace Youtuber.Net.Youtube.Official
                     case ChannelTypes.Show:
                         return prefix + "show";
                     default:
-                        return String.Empty;
+                        return string.Empty;
                 }
             }
 
-            public enum ChannelTypes {
-                Any,
-                Show
-            }
-
-            public static string EventType(EventTypes eventType) {
+            public static string EventType(EventTypes eventType){
                 string prefix = "eventType=";
                 switch (eventType) {
                     case EventTypes.Completed:
@@ -234,21 +243,15 @@ namespace Youtuber.Net.Youtube.Official
                     case EventTypes.Upcoming:
                         return prefix + "upcoming";
                     default:
-                        return String.Empty;
+                        return string.Empty;
                 }
             }
 
-            public enum EventTypes {
-                Completed,
-                Live,
-                Upcoming
-            }
-
-            public static string Location(double latitude, double longitude) {
+            public static string Location(double latitude, double longitude){
                 return $"location=({latitude},{longitude})";
             }
 
-            public static string LocationRadius(double radius, Unit measurementUnit) {
+            public static string LocationRadius(double radius, Unit measurementUnit){
                 string prefix = "locationRadius=" + radius;
                 switch (measurementUnit) {
                     case Unit.Meter:
@@ -260,20 +263,15 @@ namespace Youtuber.Net.Youtube.Official
                     case Unit.Miles:
                         return prefix + "mi";
                     default:
-                        return String.Empty;
+                        return string.Empty;
                 }
             }
 
-            public enum Unit
-            {
-                Meter, Kilometer, Feet, Miles
-            }
-
-            public static string MaxResults(int amount = 5) {
+            public static string MaxResults(int amount = 5){
                 return $"maxResults={Math.Min(50, Math.Max(0, amount))}";
             }
 
-            public static string Order(Orders order) {
+            public static string Order(Orders order){
                 string prefix = "order=";
                 switch (order) {
                     case Orders.Date:
@@ -289,23 +287,19 @@ namespace Youtuber.Net.Youtube.Official
                     case Orders.ViewCount:
                         return prefix + "viewCount";
                     default:
-                        return String.Empty;
+                        return string.Empty;
                 }
             }
 
-            public enum Orders {
-                Date,Rating,Relevance,Title,VideoCount,ViewCount
-            }
-
-            public static string PageToken(string token) {
+            public static string PageToken(string token){
                 return $"pageToken={token}";
             }
 
-            public static string PublishedAfter(DateTime date) {
+            public static string PublishedAfter(DateTime date){
                 return $"publishedAfter={XmlConvert.ToString(date, XmlDateTimeSerializationMode.Utc)}";
             }
 
-            public static string PublishedBefore(DateTime date) {
+            public static string PublishedBefore(DateTime date){
                 return $"publishedBefore={XmlConvert.ToString(date, XmlDateTimeSerializationMode.Utc)}";
             }
         }

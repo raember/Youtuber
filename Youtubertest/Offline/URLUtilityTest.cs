@@ -2,13 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Youtuber.Net;
 
-namespace youtubertest
-{
+namespace youtubertest {
     [TestClass]
-    public class URLUtilityTest
-    {
+    public class URLUtilityTest {
         private const string VIDEOID = "TWcyIpul8OE";
         private const string PLAYLISTID = "RDd2Y4dFVgS8g";
+
         private const string PLAYLISTID2 = "PLDfKAXSi6kUYmFmt-2_TIwHkYIEq2HyDD";
         //https://www.youtube.com/watch?v=iVTqxdEXFkA&list=PLDfKAXSi6kUYmFmt-2_TIwHkYIEq2HyDD
         //https://www.youtube.com/playlist?list=PLDfKAXSi6kUYmFmt-2_TIwHkYIEq2HyDD
